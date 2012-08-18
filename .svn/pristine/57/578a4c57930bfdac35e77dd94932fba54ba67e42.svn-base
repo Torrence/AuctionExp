@@ -1,0 +1,330 @@
+package nju.edu.auctionExp.service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import nju.edu.auctionExp.dao.AuctionBidDAO;
+import nju.edu.auctionExp.dao.AuctionDAO;
+import nju.edu.auctionExp.dao.AuctionGroupDAO;
+import nju.edu.auctionExp.dao.ConditionGroupDAO;
+import nju.edu.auctionExp.dao.ConditiongroupReviewDAO;
+import nju.edu.auctionExp.dao.ParticipantDAO;
+import nju.edu.auctionExp.dao.ReviewDAO;
+import nju.edu.auctionExp.model.Auction;
+import nju.edu.auctionExp.model.AuctionBid;
+import nju.edu.auctionExp.model.AuctionGroup;
+import nju.edu.auctionExp.model.AuctionStatus;
+import nju.edu.auctionExp.model.AuctionType;
+import nju.edu.auctionExp.model.ConditionGroup;
+import nju.edu.auctionExp.model.ConditiongroupReview;
+import nju.edu.auctionExp.model.Participant;
+import nju.edu.auctionExp.model.Review;
+
+public class AuctionManagerImpl implements AuctionManager {
+
+	private AuctionDAO auctionDAO;
+	
+	private ConditionGroupDAO conditionGroupDAO;
+	private ConditiongroupReviewDAO conditiongroupReviewDAO;
+	private ParticipantDAO participantDAO;
+	private ReviewDAO reviewDAO;
+	private AuctionGroupDAO auctionGroupDAO;
+	private AuctionBidDAO auctionBidDAO;
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public void assignReviewsToConditionGroup() {
+		List<Review> reviewList = this.reviewDAO.findAll();
+		if(this.conditionGroupDAO.findAll().size() == 0){
+			generateConditionGroup();
+		}
+		
+		for(int i = 0; i < reviewList.size(); ++i){
+			Review review = reviewList.get(i);
+			String reviewId = review.getId();
+			char[] ch = review.getId().toCharArray();
+			
+			StringBuilder builder = new StringBuilder();
+			builder.append(ch[0]);
+			builder.append(ch[1]);
+			builder.append(ch[2]);
+			
+			String idHead = builder.toString();
+			
+			for(int j=1; j<4; j++){
+				for(int k=0; k<2; k++){
+					/*
+					 * the relation id.
+					 */
+					StringBuilder relationId = new StringBuilder();
+					relationId.append(reviewId);
+					relationId.append((j-1)*2 + k);
+					String relationshipId = relationId.toString();
+					
+					/*
+					 * the corresponding conditionGroup id.
+					 */
+					StringBuilder conditionGroupId = new StringBuilder();
+					conditionGroupId.append(idHead);
+					conditionGroupId.append(j);
+					conditionGroupId.append(k);
+					String conGroupId = conditionGroupId.toString();
+					
+					this.conditiongroupReviewDAO.save(
+							new ConditiongroupReview(relationshipId,
+									conGroupId, reviewId)
+							);
+				}
+			}
+							
+			//this.conditongroupReviewRelationDAO.save();	
+		}	
+	}
+	
+	
+	public void generateConditionGroup(){		
+		/*
+		 * ConditionGroup id's naming strategy:
+		 * the count of review, average rating, distinct review position, overview
+		 *         06/14               2/4                   1/2/3           0/1
+		 */
+		
+		for(int i = 0; i < 2; ++i){
+			int num = (0 == i ? 6:14);
+			String count = (0 == i ? "06":"14");
+			for(int j = 0; j < 2; ++j){
+				int average = (0 == j ? 2:4);
+				String averageRating = ((Integer)average).toString();
+				for(int k = 1; k < 4; ++k){
+					String position = ((Integer)k).toString();
+					for(int l = 0; l < 2; ++l){
+						String overview = ((Integer)l).toString();
+						
+						String conditionGroupId = count + averageRating + position + overview;
+						this.conditionGroupDAO.save(new ConditionGroup(conditionGroupId, "", k, average, num));
+					}
+				}
+			}
+		}
+		
+	}
+	
+	@Override
+	public void saveAuction(Auction auction) {
+		this.auctionDAO.save(auction);
+	}
+
+	@Override
+	public Auction getAuctionByRound(int round) {
+		return this.auctionDAO.findById(round);
+	}
+	
+	@Override
+	public Auction getNextRoundAuction(){
+		List<Auction> auctionList = auctionDAO.findByHQL("from Auction where status = " + AuctionStatus.STARTED.getValue() + " order by round ASC", 0, 1);
+		return auctionList != null && auctionList.size()>0 ? auctionList.get(0) : null;
+	}
+
+	@Override
+	public void delAuction(Auction auction) {
+		this.auctionDAO.delete(auction);
+	}
+
+	@Override
+	public List<Auction> getAuctionList(int firstResult, int maxResults) {
+		return auctionDAO.findByHQL("from Auction order by round ASC", firstResult, maxResults);
+	}
+
+	@Override
+	public List<ConditionGroup> getConditionGroups() {
+		return this.conditionGroupDAO.findAll();
+	}
+
+
+	@Override
+	public boolean isEmptyConditionGroup() {
+		if(this.conditionGroupDAO.findAll().size() == 0){
+			return true;
+		}
+		return false;
+	}
+	
+	@SuppressWarnings({ "unchecked" })
+	@Override
+	public List<AuctionGroup> getAuctionGroupListByAuction(int round) {
+		List<AuctionGroup> groupList = auctionGroupDAO.findByProperty("auctionRound", round);
+		return groupList;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void calculateWinners(AuctionGroup auctionGroup,
+			AuctionType auctionType) {
+		List<AuctionBid> bidList = null;
+		if(auctionGroup.getAuctionRound() < 4 && auctionGroup.getAuctionRound() > 0){
+			//in first three rounds, the participants will bid as whole
+			List<Participant> groupParticpants = participantDAO.findAll();
+			String hql = "from AuctionBid where auction.round = " + auctionGroup.getAuctionRound()
+						+" and identifier in (";
+			for(Participant participant : groupParticpants){
+				hql += "'"+participant.getIdentifier()+"',";
+			}
+			hql += "'NO_SUCH_IDENTIFIED')";
+			bidList = auctionBidDAO.findByHQL(hql, 0, Integer.MAX_VALUE);
+		} else if(auctionGroup.getAuctionRound() < 7) {
+			//4,5,6 round
+			String labNo = auctionGroup.getConditionGroupIdArray()[0];
+			List<Participant> groupParticpants = participantDAO.findByProperty("labNo", labNo);
+			String hql = "from AuctionBid where auction.round = " + auctionGroup.getAuctionRound()
+						+" and identifier in (";
+			for(Participant participant : groupParticpants){
+				hql += "'"+participant.getIdentifier()+"',";
+			}
+			hql += "'NO_SUCH_IDENTIFIED')";
+			bidList = auctionBidDAO.findByHQL(hql, 0, Integer.MAX_VALUE);
+		} else {
+			//7,8,9 round
+			String[] conditionGroupIds = auctionGroup.getConditionGroupIdArray();
+			//get condition-groups
+			auctionGroup.setConditionGroupList(new ArrayList<ConditionGroup>());
+			for(String conditionGroupId : conditionGroupIds){
+				auctionGroup.getConditionGroupList().add(conditionGroupDAO.findById(conditionGroupId));
+			}
+			//get participants
+			String participantQueryHql = "from Participant where conditionGroup.id in ("; 
+			for(String conditionGroupId : conditionGroupIds){
+				participantQueryHql += "'"+conditionGroupId+"',";
+			}
+			participantQueryHql += "'NO_SUCH_IDENTIFIED')";
+			List<Participant> groupParticpants = participantDAO.findByHQL(participantQueryHql, 0, Integer.MAX_VALUE);
+			String hql = "from AuctionBid where auction.round = " + auctionGroup.getAuctionRound()
+						+" and identifier in (";
+			for(Participant participant : groupParticpants){
+				hql += "'"+participant.getIdentifier()+"',";
+			}
+			hql += "'NO_SUCH_IDENTIFIED')";
+			bidList = auctionBidDAO.findByHQL(hql, 0, Integer.MAX_VALUE);
+		}
+		if(bidList == null || bidList.size()<1){
+			return;
+		}else{
+			auctionGroup.setTotalBids(bidList.size());
+		}
+		
+		List<AuctionBid> winnerBids = new ArrayList<AuctionBid>();
+		//if winner is already determined
+		if(auctionDAO.findById(auctionGroup.getAuctionRound()).getStatus() == AuctionStatus.FINISHED.getValue()){
+			for(AuctionBid auctionBid : bidList){
+				if(auctionBid.getBidPrice() > auctionGroup.getGroupPrice()){
+					winnerBids.add(auctionBid);
+				}
+			}
+			auctionGroup.setWinnerBids(winnerBids);
+			return;
+		}
+		//calculate winner(s)
+		switch (auctionType) {
+			case SECOND_PRICE : {
+				float highPrice = 0.0f;
+				float secondHighPrice = 0.0f;
+				for(AuctionBid auctionBid : bidList){
+					if(auctionBid.getBidPrice() > highPrice){
+						secondHighPrice = highPrice;
+						highPrice = auctionBid.getBidPrice();
+						winnerBids.clear();
+						winnerBids.add(auctionBid);
+					}else if(auctionBid.getBidPrice() == highPrice){
+						secondHighPrice = highPrice;
+						highPrice = auctionBid.getBidPrice();
+						winnerBids.add(auctionBid);
+					}else if(auctionBid.getBidPrice() < highPrice && auctionBid.getBidPrice() > secondHighPrice){
+						secondHighPrice = auctionBid.getBidPrice();
+					}
+				}
+				auctionGroup.setGroupPrice(secondHighPrice);
+				auctionGroup.setWinnerBids(winnerBids);
+				break;
+			}
+			case RANDOM_PRICE : {
+				float randomPrice = bidList.get((int)(Math.random()*bidList.size())).getBidPrice();
+				for(AuctionBid auctionBid : bidList){
+					if(auctionBid.getBidPrice()>=randomPrice){
+						winnerBids.add(auctionBid);
+					}
+				}
+				auctionGroup.setGroupPrice(randomPrice);
+				auctionGroup.setWinnerBids(winnerBids);
+				break;
+			}
+		}
+		auctionGroupDAO.save(auctionGroup);
+	}
+
+	public void setAuctionDAO(AuctionDAO auctionDAO) {
+		this.auctionDAO = auctionDAO;
+	}
+
+	public AuctionDAO getAuctionDAO() {
+		return auctionDAO;
+	}
+
+
+	public void setConditionGroupDAO(ConditionGroupDAO conditionGroupDAO) {
+		this.conditionGroupDAO = conditionGroupDAO;
+	}
+
+
+	public ConditionGroupDAO getConditionGroupDAO() {
+		return conditionGroupDAO;
+	}
+
+
+	public void setParticipantDAO(ParticipantDAO participantDAO) {
+		this.participantDAO = participantDAO;
+	}
+
+
+	public ParticipantDAO getParticipantDAO() {
+		return participantDAO;
+	}
+
+
+	public void setReviewDAO(ReviewDAO reviewDAO) {
+		this.reviewDAO = reviewDAO;
+	}
+
+
+	public ReviewDAO getReviewDAO() {
+		return reviewDAO;
+	}
+
+	public void setConditiongroupReviewDAO(ConditiongroupReviewDAO conditiongroupReviewDAO) {
+		this.conditiongroupReviewDAO = conditiongroupReviewDAO;
+	}
+
+
+	public ConditiongroupReviewDAO getConditiongroupReviewDAO() {
+		return conditiongroupReviewDAO;
+	}
+
+
+	public void setAuctionGroupDAO(AuctionGroupDAO auctionGroupDAO) {
+		this.auctionGroupDAO = auctionGroupDAO;
+	}
+
+
+	public AuctionGroupDAO getAuctionGroupDAO() {
+		return auctionGroupDAO;
+	}
+
+
+	public AuctionBidDAO getAuctionBidDAO() {
+		return auctionBidDAO;
+	}
+
+
+	public void setAuctionBidDAO(AuctionBidDAO auctionBidDAO) {
+		this.auctionBidDAO = auctionBidDAO;
+	}
+
+}

@@ -1,0 +1,14 @@
+package nju.edu.auctionExp.service;
+
+import java.util.ArrayList;
+
+import nju.edu.auctionExp.model.AuctionBid;
+
+public class AuctionGroupManagerImpl implements AuctionGroupManager {
+
+	public AuctionBid calculateWinner(ArrayList<String> conditionGroupId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+}

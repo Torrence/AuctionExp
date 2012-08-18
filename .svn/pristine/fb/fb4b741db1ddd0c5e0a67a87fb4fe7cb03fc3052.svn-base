@@ -1,0 +1,43 @@
+<%@ page contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
+<%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles"%>
+<tiles:insertTemplate template="/layouts/baseLayout.jsp">
+	<tiles:putAttribute name="title" value="Sign In" />
+	<tiles:putAttribute name="content">
+		<div id="sign-in" class="container showgrid">
+			<div class="span-24 last">
+	        <fieldset>
+	          <legend>Sign In</legend>
+	          <form method="get" action="signIn.action">
+	          <table>
+		          <tr>
+		          <p>
+		            <td><label for="dummy6">Your Name</label></td>
+		            <td><input type="text" class="title" name="participant.name" id="name" value=""></td>
+		          </p>
+		          </tr>
+		          
+		          <tr>
+		          <p>
+		            <td><label for="dummy6">Student ID</label></td>
+		            <td><input type="text" class="title" name="participant.studentId" id="studentId" value=""></td>
+		          </p>
+		          </tr>
+		          
+		          <tr>
+		          <p>
+		            <td><label for="dummy6">Lab Number</label></td>
+		            <td><input type="text" class="title" name="participant.labNo" id="labNo" value=""></td>
+		          </p>
+		          </tr>
+		          
+		          <tr>
+		          	<td></td>
+		          	<td><input type="submit" class="participant-save" value="Join Now"/></td>
+	          </table>
+	        </fieldset>
+	
+	      </div>
+	   </div>
+	</tiles:putAttribute>
+</tiles:insertTemplate>

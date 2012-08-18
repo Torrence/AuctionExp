@@ -1,0 +1,135 @@
+package nju.edu.auctionExp.action.administration;
+
+import java.util.List;
+
+import com.opensymphony.xwork2.Action;
+
+import nju.edu.auctionExp.action.BaseAction;
+import nju.edu.auctionExp.model.Auction;
+import nju.edu.auctionExp.model.AuctionStatus;
+import nju.edu.auctionExp.model.ConditionGroup;
+import nju.edu.auctionExp.model.Item;
+import nju.edu.auctionExp.service.AuctionManager;
+import nju.edu.auctionExp.service.ItemManager;
+
+public class AuctionAction extends BaseAction {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1705749408386120102L;
+	private AuctionManager auctionManager;
+	private ItemManager itemManager;
+	private Auction auction;
+	private List<Auction> auctionList;
+	private List<ConditionGroup> conditionGroupList;
+	private String groupedIdentifierList;
+	
+	/**
+	 * get auction form
+	 * @return
+	 */
+	public String getAuctionForm(){
+		if(auction != null){
+			this.setAuction(auctionManager.getAuctionByRound(auction.getRound()));
+		}else{
+			this.setAuction(auctionManager.getAuctionByRound(1));
+		}
+		this.setAuctionList(auctionManager.getAuctionList(0, 9));
+		return Action.SUCCESS;
+	}
+	
+	
+	
+	/**
+	 * save an auction
+	 * @return
+	 */
+	public String saveAuction(){
+		Auction auctionInDb = auctionManager.getAuctionByRound(auction.getRound());
+		auctionInDb.setShowReviews(auction.getShowReviews());
+		auctionManager.saveAuction(auctionInDb);
+		Item itemInDb = auctionInDb.getItem();
+		itemInDb.setTitle(auction.getItem().getTitle());
+		itemInDb.setImageUrl(auction.getItem().getImageUrl());
+		itemManager.saveItem(itemInDb);
+		this.setJsonModel(auctionInDb);
+		return Action.SUCCESS;
+	}
+	
+	/**
+	 * manually start a auction
+	 * @return
+	 */
+	public String startAuction(){
+		List<Auction> auctionList = auctionManager.getAuctionList(0, Integer.MAX_VALUE);
+		for(Auction tmpAuction : auctionList){
+			if(tmpAuction.getStatus() == AuctionStatus.STARTED.getValue()){
+				tmpAuction.setStatus(AuctionStatus.FINISHED);
+				auctionManager.saveAuction(tmpAuction);
+			}
+		}
+		Auction auctionInDb = auctionManager.getAuctionByRound(auction.getRound());
+		auctionInDb.setStatus(AuctionStatus.STARTED);
+		auctionManager.saveAuction(auctionInDb);
+		this.setJsonModel(auctionInDb);
+		return Action.SUCCESS;
+	}
+	
+	/**
+	 * calculate winners by defined groups
+	 * @return
+	 */
+	public String calculateWinners(){
+		//TODO
+		return Action.SUCCESS;
+	}
+
+	public Auction getAuction() {
+		return auction;
+	}
+
+	public void setAuction(Auction auction) {
+		this.auction = auction;
+	}
+
+	public List<ConditionGroup> getConditionGroupList() {
+		return conditionGroupList;
+	}
+
+	public void setConditionGroupList(List<ConditionGroup> conditionGroupList) {
+		this.conditionGroupList = conditionGroupList;
+	}
+
+	public void setAuctionManager(AuctionManager auctionManager) {
+		this.auctionManager = auctionManager;
+	}
+
+	public AuctionManager getAuctionManager() {
+		return auctionManager;
+	}
+
+	public void setAuctionList(List<Auction> auctionList) {
+		this.auctionList = auctionList;
+	}
+
+	public List<Auction> getAuctionList() {
+		return auctionList;
+	}
+	public ItemManager getItemManager() {
+		return itemManager;
+	}
+
+	public void setItemManager(ItemManager itemManager) {
+		this.itemManager = itemManager;
+	}
+
+	public void setGroupedIdentifierList(String groupedIdentifierList) {
+		this.groupedIdentifierList = groupedIdentifierList;
+	}
+
+	public String getGroupedIdentifierList() {
+		return groupedIdentifierList;
+	}
+
+}

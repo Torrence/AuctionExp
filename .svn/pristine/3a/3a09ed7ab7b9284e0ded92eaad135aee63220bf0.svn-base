@@ -1,0 +1,76 @@
+package nju.edu.auctionExp.service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import nju.edu.auctionExp.dao.AuctionGroupDAO;
+import nju.edu.auctionExp.dao.ConditiongroupReviewDAO;
+import nju.edu.auctionExp.dao.ReviewDAO;
+import nju.edu.auctionExp.model.AuctionGroup;
+import nju.edu.auctionExp.model.ConditiongroupReview;
+import nju.edu.auctionExp.model.Review;
+
+public class AuctionGroupManagerImpl implements AuctionGroupManager {
+
+	private ConditiongroupReviewDAO conditiongroupReviewDAO;
+	private AuctionGroupDAO auctionGroupDAO;
+	private ReviewDAO reviewDAO;
+	
+	public List<Review> getReviewsByConditionGroupId(String conditionGroupId){
+		List<Review> reviews = new ArrayList<Review>();
+		
+		@SuppressWarnings("unchecked")
+		List<ConditiongroupReview> relations = 
+			this.conditiongroupReviewDAO.findByProperty(
+					"conditionGroupId", conditionGroupId);
+		
+		String hql = "from Review where id in (";
+		for(ConditiongroupReview relation : relations){
+			hql += "'"+relation.getReviewId()+"',";
+		}
+		hql += "'NO_SUCH_ID')";
+		reviews = this.reviewDAO.findByHQL(hql, 0, Integer.MAX_VALUE);
+		return reviews;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public float getAuctionGroupPrice(int round, String conditionGroup) {
+		List<AuctionGroup> auctionGroupList = auctionGroupDAO.findByProperty("auctionRound", round);
+		for(AuctionGroup auctionGroup : auctionGroupList){
+			String[] conditionGroupIds = auctionGroup.getConditionGroupIdArray();
+			for(String conditionGroupId : conditionGroupIds){
+				if(conditionGroupId != null && conditionGroupId.equals(conditionGroup)){
+					return auctionGroup.getGroupPrice();
+				}
+			}
+		}
+		return 0.0f;
+	}
+
+	public void setReviewDAO(ReviewDAO reviewDAO) {
+		this.reviewDAO = reviewDAO;
+	}
+
+	public ReviewDAO getReviewDAO() {
+		return reviewDAO;
+	}
+
+	public ConditiongroupReviewDAO getConditiongroupReviewDAO() {
+		return conditiongroupReviewDAO;
+	}
+
+	public void setConditiongroupReviewDAO(
+			ConditiongroupReviewDAO conditiongroupReviewDAO) {
+		this.conditiongroupReviewDAO = conditiongroupReviewDAO;
+	}
+
+	public void setAuctionGroupDAO(AuctionGroupDAO auctionGroupDAO) {
+		this.auctionGroupDAO = auctionGroupDAO;
+	}
+
+	public AuctionGroupDAO getAuctionGroupDAO() {
+		return auctionGroupDAO;
+	}
+	
+}

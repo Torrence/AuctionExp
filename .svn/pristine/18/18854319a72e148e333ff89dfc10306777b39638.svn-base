@@ -1,0 +1,12 @@
+@CHARSET "UTF-8";
+tr.current td{
+	background-color: yellow !important;
+}
+
+tr.winner td{
+	background-color: green !important;
+}
+
+tr.no-bid td{
+	background-color: red !important;
+}

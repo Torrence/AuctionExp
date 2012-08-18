@@ -1,0 +1,253 @@
+package nju.edu.auctionExp.action.administration;
+
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+import org.apache.commons.collections.map.LinkedMap;
+
+
+import com.opensymphony.xwork2.Action;
+
+import nju.edu.auctionExp.action.BaseAction;
+import nju.edu.auctionExp.model.AuctionGroup;
+import nju.edu.auctionExp.model.ConditionGroup;
+import nju.edu.auctionExp.model.Participant;
+import nju.edu.auctionExp.model.Review;
+import nju.edu.auctionExp.service.AuctionManager;
+import nju.edu.auctionExp.service.GroupManager;
+import nju.edu.auctionExp.service.ParticipantManager;
+import nju.edu.auctionExp.common.algo.StringIDGenerator;
+
+public class ConditionsAction extends BaseAction {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -698723817267288784L;
+	
+	private AuctionManager auctionManager;
+	private ParticipantManager participantManager;
+	private GroupManager groupManager;
+	
+	private Map<String, Integer> labGroup = new HashMap<String, Integer>();
+	private ConditionGroup conditionGroup;
+	private List<ConditionGroup> conditionGroups;
+	private int groupNum;                         // The group number user inputs.
+	private String grouping;                       // 24 integers indicate each of the condition-group is assigned to which real group.
+	private Map<String,ArrayList<String>> groupMap = new HashMap<String, ArrayList<String>>();
+	//private int round = 0;
+	
+
+	public String getLabGroups(){
+		
+		List<Participant> participantList = this.participantManager.findAll();
+		
+		labGroup.clear();
+		
+		for(int i=0; i<participantList.size(); i++){
+			String key = participantList.get(i).getLabNo();
+			if(!labGroup.containsKey(key)){
+				labGroup.put(key, 1);
+			}else{
+				int count = labGroup.get(key);
+				count++;
+				labGroup.remove(key);
+				labGroup.put(key, count);
+			}
+		}
+		return Action.SUCCESS;
+	}
+	
+	public String saveGroup(){
+		
+		ArrayList<ArrayList<Integer>> groupTable = new ArrayList<ArrayList<Integer>>();
+		
+		for(int i = 0; i<groupNum; i++){
+			ArrayList<Integer> tmp = new ArrayList<Integer>();
+			groupTable.add(tmp);
+		}
+		
+		int[] groupings = new int[24];
+		
+		String[] groups = this.grouping.split(",");
+		
+		for(int j = 0; j<groups.length; ++j){
+			groupings[j] = Integer.parseInt(groups[j]);
+		}
+		
+		for(int i = 0; i < 24; ++i){
+			//groupTable[groupings[i]][(groupTable[groupings[i]]).length] = i;
+			groupTable.get(groupings[i]-1).add(i);
+		}
+		
+		String[] auctionGroupIds = new String[groupNum];
+		
+		for(int i = 0; i<groupNum; i++){
+			StringBuilder sd = new StringBuilder();
+			for(int j = 0; j<groupTable.get(i).size(); j++){
+				sd.append(this.participantManager.getConditionGroupIdByNum(groupTable.get(i).get(j)));
+				sd.append(',');
+			}
+			if(sd.length() != 0){
+				sd.deleteCharAt(sd.length()-1);
+			}
+			auctionGroupIds[i] = sd.toString();
+		}
+		
+		deleteAndGenerateAuctionGroups(auctionGroupIds);
+		//generateGroups(groupTable);
+		
+		return Action.SUCCESS;
+	}
+	
+	public void deleteAndGenerateAuctionGroups(String[] auctionGroupIds){
+		/*
+		 * first check whether the auction_group table is empty or not.
+		 * 
+		 */
+		if(!this.groupManager.isEmpty(7) & !this.groupManager.isEmpty(8) &!this.groupManager.isEmpty(9)){
+			this.groupManager.deleteAll(7);
+			this.groupManager.deleteAll(8);
+			this.groupManager.deleteAll(9);
+		}
+		
+		/*
+		 * Create groups for auction round 7, 8, and 9, with the 
+		 * generated id by the method getIdentifier.
+		 * */
+		for(int i = 7; i<=9; i++){
+			for(int j = 0; j < groupNum; j++){
+				AuctionGroup auctionGroup = new AuctionGroup(
+						new Random().nextInt(122344), i, auctionGroupIds[j]);
+				auctionGroup.setId(StringIDGenerator.getInstance().generate());
+				this.groupManager.saveAuctionGroup(auctionGroup);			
+			}
+		}
+	}
+	
+	public void deleteAndGenerateAuctionGroups(String[] auctionGroupIds, int round){
+		/*
+		 * first check whether the auction_group table is empty or not.
+		 * 
+		 */
+		if(!this.groupManager.isEmpty(round)){
+			this.groupManager.deleteAll(round);
+		}
+		
+		/*
+		 * Create groups for auction round 7, 8, and 9, with the 
+		 * generated id by the method getIdentifier.
+		 * */
+		for(int j = 0; j < groupNum; j++){
+				AuctionGroup auctionGroup = new AuctionGroup(
+						new Random().nextInt(122344), round, auctionGroupIds[j]);
+				auctionGroup.setId(StringIDGenerator.getInstance().generate());
+				this.groupManager.saveAuctionGroup(auctionGroup);			
+			}
+
+	}
+	
+	public void generateGroups(ArrayList<ArrayList<Integer>> groupTable){
+		// the arraylist is transmitted from the client side, with the length of groupNum.
+		
+		for(int i = 0; i < groupNum; ++i){
+			ArrayList<Integer> group = groupTable.get(i);
+			ArrayList<String> realGroup = new ArrayList<String>();
+			for(int j=0; j<group.size(); ++j){
+				realGroup.add(this.participantManager.getConditionGroupIdByNum(group.get(j)));
+			}
+			this.groupMap.put("group-" + (i+1), realGroup);
+		}
+	}
+	
+	public String findConditionGroups(){
+		if(this.auctionManager.isEmptyConditionGroup()){
+			this.auctionManager.assignReviewsToConditionGroup();
+		}
+		conditionGroups =  this.auctionManager.getConditionGroups();
+		return Action.SUCCESS;
+	}
+	
+	public String assignGroups(){
+		
+		return Action.SUCCESS;
+	}
+	
+	
+	public void setAuctionManager(AuctionManager auctionManager) {
+		this.auctionManager = auctionManager;
+	}
+	public AuctionManager getAuctionManager() {
+		return auctionManager;
+	}
+	public void setConditionGroup(ConditionGroup conditionGroup) {
+		this.conditionGroup = conditionGroup;
+	}
+	public ConditionGroup getConditionGroup() {
+		return conditionGroup;
+	}
+	public void setConditionGroups(List<ConditionGroup> conditionGroups) {
+		this.conditionGroups = conditionGroups;
+	}
+	public List<ConditionGroup> getConditionGroups() {
+		return conditionGroups;
+	}
+
+
+	public void setGroupNum(int groupNum) {
+		this.groupNum = groupNum;
+	}
+
+
+	public int getGroupNum() {
+		return groupNum;
+	}
+
+	public void setParticipantManager(ParticipantManager participantManager) {
+		this.participantManager = participantManager;
+	}
+
+	public ParticipantManager getParticipantManager() {
+		return participantManager;
+	}
+
+	public void setGrouping(String grouping) {
+		this.grouping = grouping;
+	}
+
+	public String getGrouping() {
+		return grouping;
+	}
+
+
+	public void setGroupMap(Map<String,ArrayList<String>> groupMap) {
+		this.groupMap = groupMap;
+	}
+
+	public Map<String,ArrayList<String>> getGroupMap() {
+		return groupMap;
+	}
+
+	public void setGroupManager(GroupManager groupManager) {
+		this.groupManager = groupManager;
+	}
+
+	public GroupManager getGroupManager() {
+		return groupManager;
+	}
+
+
+	public void setLabGroup(Map<String, Integer> labGroup) {
+		this.labGroup = labGroup;
+	}
+
+
+	public Map<String, Integer> getLabGroup() {
+		return labGroup;
+	}
+
+}

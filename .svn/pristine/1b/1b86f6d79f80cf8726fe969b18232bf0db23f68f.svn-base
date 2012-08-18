@@ -1,0 +1,117 @@
+<%@ page contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
+<%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles"%>
+<tiles:insertTemplate template="/layouts/baseLayout.jsp">
+	<tiles:putAttribute name="title" value="Setup Auction" />
+	<tiles:putAttribute name="content">
+		<script type="text/javascript">
+	  		$(document).ready(function(){
+	  			var saveAuction = function(round,itemId,itemTitle,imageUrl,showReviews){
+	  				$.ajax({
+	  				  type: 'POST',
+	  				  url: '<s:url action="saveAuction" namespace="/auction" />',
+	  				  data: {
+	  					  'auction.round':round,
+	  					  'auction.item.id':itemId,
+	  					  'auction.item.title':itemTitle,
+	  					  'auction.item.imageUrl':imageUrl,
+	  					  'auction.showReviews':showReviews
+	  				  },
+	  				  success: function(data){alert('Save Success');},
+	  				  dataType: 'json'
+	  				});
+	  			};
+	  			$('#save-auction').live('click',function(){
+	  				var round = $('#round').val();
+	  				var itemId = $('#auction-form').find('input[name="item.id"]').val();
+	  				var itemTitle = $('#auction-form').find('input[name="item.title"]').val();
+	  				var imageUrl = $('#auction-form').find('input[name="item.imageUrl"]').val();
+	  				var showReviews = $('#auction-form').find('input[name="showReviews"]').attr('checked')=='checked';
+	  				saveAuction(round,itemId,itemTitle,imageUrl,showReviews);
+	  			});
+	  			$('#round').live('change',function(){
+	  				var round = $(this).val();
+	  				window.location = '<s:url action="getAuctionForm" namespace="/auction" />?auction.round='+round;
+	  			});
+		  		$('#start-autcion').live('click',function(){
+		  			var round = $('#round').val();
+		  			$.ajax({
+	  				  type: 'POST',
+	  				  url: '<s:url action="startAuction" namespace="/auction" />',
+	  				  data: {
+	  					  'auction.round':round
+	  				  },
+	  				  success: function(data){
+	  					$('#auction-status').html('0');
+			  			$('#start-autcion').attr('disabled',true);
+			  			var timer = setInterval(function(){
+			  				var time = parseInt($('#auction-status').text())+1;
+			  				$('#auction-status').html(time);
+			  			}, 1000);
+			  			$('#show-result').attr('disabled',false);
+	  				  },
+	  				  dataType: 'json'
+	  				});
+		  		});
+	  		});
+	  	</script>
+	  	<div id="setup-auction">
+		  	<form id="auction-form" class="inline">
+				<fieldset>
+					<legend>Setup Auction</legend>
+					<div>
+						<div class="span-4">
+							<label for="round">Auction Round:</label>
+							<select id="round" name="round">
+								<s:iterator value="auctionList" status="status">
+									<option value='<s:property value="round" />' <s:if test="round==auction.round">selected</s:if>>
+										<s:property value="round" />
+									</option>
+								</s:iterator>
+							</select>
+						</div>
+						<div class="span-3">
+							<input type="checkbox" name="showReviews" value='<s:property value="auction.showReviews"/>' <s:if test="auction.showReviews">checked</s:if> class="checkbox" />
+							enable reviews
+						</div>
+						<div class="span-4">
+							<input type="button" value="Save" id="save-auction">
+						</div>
+						<div class="span-4">
+							Auction Status:
+							<span id="auction-status" class="info">
+								<s:if test="auction.status==0">Ready</s:if>
+								<s:elseif test="auction.status==1">Started</s:elseif>
+								<s:else>Finished</s:else>
+							</span>
+						</div>
+						<div class="span-3">
+							<input type="button" value="Start Auction" id="start-autcion" <s:if test="auction.status==1||auction.status==2">disabled</s:if> />
+						</div>
+						<div class="span-3">
+							<input type="button" value="See Result" id="show-result" <s:if test="auction.status==0">disabled</s:if> />
+						</div>
+					</div>
+					<hr>
+					<p>
+						<label for="title">Title</label>
+						<br>
+						<input type="hidden" name="item.id" value='<s:property value="auction.item.id" />' />
+						<input type="text" name="item.title" id="title" value='<s:property value="auction.item.title" />' size="80" />
+					</p>
+					<p>
+						<label for="preview">Preview</label>
+						<br>
+						<input type="hidden" name="item.imageUrl" value='<s:property value="auction.item.imageUrl" />' />
+						<s:if test="auction.item==null||auction.item.imageUrl==null||auction.item.imageUrl.equals('')">
+							<img src='<s:url value="/images/no-pre.png" />' width="300px" height="300px" />
+						</s:if>
+						<s:else>
+							<img alt='' src='<s:url value="/uploadfiles/" /><s:property value="auction.item.imageUrl" />' width="300px" height="300px" />
+						</s:else>
+					</p>
+				</fieldset>
+			</form>
+		</div>
+	</tiles:putAttribute>
+</tiles:insertTemplate>

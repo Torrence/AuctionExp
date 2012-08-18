@@ -1,0 +1,42 @@
+package nju.edu.auctionExp.service;
+
+import java.util.List;
+
+import nju.edu.auctionExp.dao.AuctionDAO;
+import nju.edu.auctionExp.model.Auction;
+
+public class AuctionManagerImpl implements AuctionManager {
+
+	private AuctionDAO auctionDAO;
+	
+	public void saveAuction(Auction auction) {
+		this.auctionDAO.save(auction);
+	}
+
+	public void generateConditionGroup(String[][] reviewsId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public Auction getAuctionByRound(int round) {
+		return this.auctionDAO.findById(round);
+	}
+
+	public void delAuction(Auction auction) {
+		this.auctionDAO.delete(auction);
+	}
+
+	@Override
+	public List<Auction> getAuctionList(int firstResult, int maxResults) {
+		return auctionDAO.findByHQL("from Auction order by round ASC", firstResult, maxResults);
+	}
+
+	public void setAuctionDAO(AuctionDAO auctionDAO) {
+		this.auctionDAO = auctionDAO;
+	}
+
+	public AuctionDAO getAuctionDAO() {
+		return auctionDAO;
+	}
+
+}

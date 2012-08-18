@@ -1,0 +1,56 @@
+package nju.edu.auctionExp.dao;
+
+import static org.junit.Assert.*;
+
+import java.util.List;
+
+import nju.edu.auctionExp.model.ConditionGroup;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class ConditionGroupDAOTest {
+	private ConditionGroupDAO dao;
+
+	@Before
+	public void setUp() throws Exception {
+		ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext-dao-hibernate.xml");
+		this.dao = (ConditionGroupDAO)context.getBean("ConditionGroupDAO");
+	}
+
+	@Test
+	public void testInitDao() {
+		this.dao.initDao();
+	}
+
+	@Test
+	public void testSave() {
+		ConditionGroup conditionGroup = new ConditionGroup("1", "useability", 2, 2);
+		this.dao.save(conditionGroup);
+	}
+
+	@Test
+	public void testDelete() {
+		ConditionGroup conditionGroup = new ConditionGroup("1", "useability", 2, 2);
+		this.dao.delete(conditionGroup);
+	}
+
+	@Test
+	public void testFindById() {
+		this.dao.findById("1");
+	}
+
+	@Test
+	public void testFindByExample() {
+		ConditionGroup conditionGroup = new ConditionGroup("1", "useability", 2, 2);
+		List<ConditionGroup> conditionGroupList = this.dao.findByExample(conditionGroup);
+	}
+
+	@Test
+	public void testFindAll() {
+		List<ConditionGroup> conditionGroupList = this.dao.findAll();
+	}
+
+}

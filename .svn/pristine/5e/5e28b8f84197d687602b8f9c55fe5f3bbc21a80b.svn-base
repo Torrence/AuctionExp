@@ -1,0 +1,11 @@
+<%@ page contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
+<div id="header">
+	<h1>
+		Auction Experiment
+	</h1>
+	<s:if test="#session.IDENTIFIER != null">
+		<h4>(My Identifier:<s:property value="#session.IDENTIFIER"/>)</h4>
+	</s:if>
+	<hr>
+</div>

@@ -1,0 +1,24 @@
+package nju.edu.auctionExp.service;
+
+import nju.edu.auctionExp.model.Review;
+
+import java.util.List;
+
+public interface AuctionGroupManager {
+	
+	
+	/**
+	 * get reviews by given condition-group
+	 * @param conditionGroupId
+	 * @return
+	 */
+	public List<Review> getReviewsByConditionGroupId(String conditionGroupId);
+	
+	/**
+	 * @param round
+	 * @param identifier
+	 * @return
+	 */
+	public float getAuctionGroupPrice(int round, String conditionGroup);
+	
+}

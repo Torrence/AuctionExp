@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<import resource="classpath:applicationContext-dao-hibernate.xml" />
+	
+	<!-- The service  -->
+	<import resource="classpath:applicationContext-service-user.xml" />
+	<import resource="classpath:applicationContext-service-review.xml" />
+	<import resource="classpath:applicationContext-service-auction.xml" />
+	
+	<!-- The action  -->
+	<import resource="classpath:applicationContext-action-user.xml" />
+	<import resource="classpath:applicationContext-action-review.xml" />
+	<import resource="classpath:applicationContext-action-auction.xml" />
+</beans>

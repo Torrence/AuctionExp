@@ -1,0 +1,58 @@
+<%@ page contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
+<%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
+<tiles:insertTemplate template="/layouts/baseLayout.jsp">
+	<tiles:putAttribute name="title" value="sign in successfully" />
+	<tiles:putAttribute name="content">
+		<script type="text/javascript">
+		  		$(document).ready(function(){
+		  			var checkAvailableAuction = function(){
+			  			//Check if there is available auction
+			  				$.ajax({
+				  				  type: 'POST',
+				  				  url: '<s:url action="checkAvailableAuction" namespace="/participant" />',
+				  				  data: {
+				  				  },
+				  				  success: function(data){
+				  					  if(data.boolean == true){
+				  						  window.location = '<s:url action="getAuctionDetail" namespace="/participant" />';
+				  					  }else{
+				  						  alert('New auction has not started, please wait until informed to continue!');
+				  					  }
+				  				  },
+				  				  dataType: 'json'
+				  				});
+			  			};
+			  		$('#continue-auction').live('click',function(event){
+			  			event.preventDefault();
+			  			checkAvailableAuction();
+			  		});
+		  		});
+  		</script>
+  		<h1>
+	    	Welcome <s:property value="participant.identifier" />, you can 
+			<a id="continue-auction" href='javascript:void(0);'>BID NOW!</a>
+		</h1>
+		<h3>
+        	Note:
+        </h3>
+        <hr/>
+        <p>
+        	Please use your name, student ID and lab number to sign in. 
+        	After sign in, you will get the unique Identification number. 
+        	And this number will be used to identify the winner after each round of the auction. Remember not to lose it.
+        </p>
+        <hr/>
+        
+        <h3>
+        	Rule:
+        </h3>
+        <hr/>
+        <p>
+       	Nobody can see the bid of others, and after the deadline of the auction, 
+        	the conductor will announce the winner.
+        	Who pays the highest will get item by the second highest price.
+        </p>
+        <hr/>
+	</tiles:putAttribute>
+</tiles:insertTemplate>

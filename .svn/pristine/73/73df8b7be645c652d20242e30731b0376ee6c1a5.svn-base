@@ -1,0 +1,134 @@
+package nju.edu.auctionExp.service;
+
+import java.util.Random;
+import java.util.List;
+
+import nju.edu.auctionExp.dao.AuctionGroupDAO;
+import nju.edu.auctionExp.dao.ConditionGroupDAO;
+import nju.edu.auctionExp.dao.ParticipantDAO;
+import nju.edu.auctionExp.model.ConditionGroup;
+import nju.edu.auctionExp.model.Participant;
+
+
+public class ParticipantManagerImpl implements ParticipantManager {
+	
+	private ParticipantDAO participantDAO;
+	private ConditionGroupDAO conditionGroupDAO;
+	private AuctionGroupDAO auctionGroupDAO;
+
+	public void signIn(Participant participant) {
+		if(this.participantExist(participant.getStudentId())){
+			Participant tmp = (Participant) this.participantDAO.findByExample(participant).get(0);
+			participant.setIdentifier(tmp.getIdentifier());
+			return;
+		}
+		//TODO random assign participant to a condition-group
+		List<ConditionGroup> conditionGroupList = conditionGroupDAO.findAll();
+		int randomIndex = (int)(Math.random()*conditionGroupList.size());
+		participant.setConditionGroup(conditionGroupList.get(randomIndex));
+		this.participantDAO.save(participant);		
+	}
+
+	/**
+	 * generate identifier based on the studentId.
+	 */
+	public String generateId(String studentId) {
+		char[] ch = studentId.toCharArray();
+		StringBuilder builder = new StringBuilder();
+		for(int i = 0; i < ch.length; ++i){
+			builder.append(ch[i] - 'a');
+		}
+		return builder.toString();
+	}
+	
+	public String generateConditionGroupId(){
+		Random random = new Random();
+		int count = random.nextInt(24) + 1;
+		
+		return this.getConditionGroupIdByNum(count);
+	}
+	
+	public String getConditionGroupIdByNum(int num){
+		switch(num){
+		case 0: return "06211";
+		case 1: return "06210";
+		case 2: return "06411";
+		case 3: return "06410";
+		case 4: return "14211";
+		case 5: return "14210";
+		case 6: return "14411";
+		case 7: return "14410";
+		
+		case 8: return "06221";
+		case 9: return "06220";
+		case 10: return "06421";
+		case 11: return "06420";
+		case 12: return "14221";
+		case 13: return "14220";
+		case 14: return "14421";
+		case 15: return "14420";
+		
+		case 16: return "06231";
+		case 17: return "06230";
+		case 18: return "06431";
+		case 19: return "06430";
+		case 20: return "14231";
+		case 21: return "14230";
+		case 22: return "14431";
+		case 23: return "14430";
+		
+		
+		default: return "06211";
+			
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Participant> findAll() {
+		return this.participantDAO.findAll();
+	}
+
+	public Participant findByIdentifier(String identifier) {
+		return this.participantDAO.findById(identifier);
+	}
+
+	public boolean participantExist(String studentId) {
+		return this.participantDAO.findByProperty("studentId", studentId).size()>0;
+	}
+
+	public void deleteByIdentifier(String identifier) {
+		Participant participant = this.findByIdentifier(identifier);
+		this.participantDAO.delete(participant);
+	}
+
+
+	public void setParticipantDAO(ParticipantDAO participantDAO) {
+		this.participantDAO = participantDAO;
+	}
+
+	public ParticipantDAO getParticipantDAO() {
+		return participantDAO;
+	}
+
+	public void setConditionGroupDAO(ConditionGroupDAO conditionGroupDAO) {
+		this.conditionGroupDAO = conditionGroupDAO;
+	}
+
+	public ConditionGroupDAO getConditionGroupDAO() {
+		return conditionGroupDAO;
+	}
+
+	public void setAuctionGroupDAO(AuctionGroupDAO auctionGroupDAO) {
+		this.auctionGroupDAO = auctionGroupDAO;
+	}
+
+	public AuctionGroupDAO getAuctionGroupDAO() {
+		return auctionGroupDAO;
+	}
+
+	@Override
+	public void saveParticipant(Participant participant) {
+		this.participantDAO.save(participant);
+		
+	}
+}

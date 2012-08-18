@@ -1,0 +1,174 @@
+<%@ page contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
+<%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles"%>
+<tiles:insertTemplate template="/layouts/baseLayout.jsp">
+	<tiles:putAttribute name="title" value="Setup Groups" />
+	<tiles:putAttribute name="content">
+		<script type="text/javascript">
+	  		$(document).ready(function(){
+	  			$('.save-group').live('change',function(){
+	  				var groupIndex = $(this).attr('data-id');
+	  				var theId = $(this).attr('id');
+	  				//var selectIndex = $('#' + theId).find("option:selected").text();
+	  				var selectIndex = $('#' + theId).get(0).selectedIndex + 1;
+	  				var oTest = $('#group-' + selectIndex);
+					var images=new Array();        
+					for(var i=0;i<10;i++){          
+					  	images[i]=new Array();    
+					   	for(var j=0;j<20;j++){    
+					    	images[i][j]=1; 
+					    }
+					}
+					var insertDiv = '<td>' + groupIndex + "    "  + selectIndex
+						+ "<input type='button' id='b-'" + groupIndex  + "' value='cancle'/>"
+						+ "</td>";
+					
+					oTest.append(insertDiv);
+	  			});
+	  		});
+	  	</script>
+		<div id="test"></div>
+		<fieldset>
+			<legend>Assign Groups</legend>
+	          <table>
+		          <caption><em>Description of the 24 conditions.</em></caption>
+		          <thead>
+		            
+		            <tr>
+		              <th class="span-1" colspan=2 rowspan=3></th>
+		              <th class="span-1" colspan=4 style="text-align:center;">Number of Reviews:6</th>
+		              <th class="span-1" colspan=4 style="text-align:center;">Number of Reviews:14</th>
+		            </tr>
+		            <tr>
+		              <th class="span-1" colspan=2 style="text-align:center;">average rating: 2</th>
+		              <th class="span-1" colspan=2 style="text-align:center;">average rating: 4</th>
+		              <th class="span-1" colspan=2 style="text-align:center;">average rating: 2</th>
+		              <th class="span-1" colspan=2 style="text-align:center;">average rating: 4</th>
+		            </tr>
+		            <tr>
+		               <s:iterator value="{'1', '2', '3', '4'}" id='number'>
+		                  <th class="span-1">with overview</th>
+		              	  <th class="span-1">without overview</th>
+		               </s:iterator>
+		            </tr>
+		          </thead>
+		          
+		          
+		          
+		          <tbody>
+		          	<tr>
+		          		<td class="span-1" rowspan=3>Position of the distinct review</td>
+		          		
+		          		<s:iterator value="{'begin','middle','end'}" id ="p" status="position">
+		          			<td style="width:64px"><s:property value="p" /></td>
+		          			<s:iterator value='{"1","2","3","4","5","6","7","8"}' id="num">
+		          				<td>
+		          					<select class="save-group" id='<s:property value="p"/>-<s:property value="num"/>' data-id='<s:property value="p"/>-<s:property value="num"/>' style="width:82px">
+		       		          		<s:iterator value="new int[groupNum]" status="i">
+		          						<option value="#i.index">Group<s:property value="#i.index + 1"/> </option>
+		          					</s:iterator>
+		          					</select>
+		          				</td>
+		          			</s:iterator>
+		          			</tr>
+		          			<s:if test="%{#position.getIndex()>=0}">
+		          				<tr>
+		          			</s:if>
+		          		</s:iterator>
+		          	
+		          </tbody>
+	          </table>
+	          
+	          <hr>
+	          <hr>
+	          <hr>
+	          <hr>
+	           <table>
+		          <caption><em>Preview of group-assignment</em></caption>
+		          <thead>
+		            
+		            <tr>
+		              <th class="span-1" style="text-align:center;">Group Number</th>
+		              <th class="span-1" colspan=8 style="text-align:center;">Corresponding Condition Groups</th>
+		            </tr>
+		            
+		          </thead>
+		          <tbody>
+		          	<s:iterator value="new int[groupNum]" id="pId" status="i">
+		          		<tr id='group-<s:property value="#i.index+1"/>'>
+		          			<td >Group <s:property value="#i.index+1"/></td>
+		          		</tr>
+		          	</s:iterator>
+		          </tbody>
+	          </table>
+	          
+	          
+	          <hr>
+	          <hr>
+	          <hr>
+	          <hr>
+	          
+	          
+	           <table>
+		          <caption><em>the corresponding condition groups, presented just in testing</em></caption>
+		          <thead>
+		            
+		            <tr>
+		              <th class="span-1" colspan=2 rowspan=3></th>
+		              <th class="span-1" colspan=4>Number of Reviews:6</th>
+		              <th class="span-1" colspan=4>Number of Reviews:14</th>
+		            </tr>
+		            <tr>
+		              <th class="span-1" colspan=2>average rating: 2</th>
+		              <th class="span-1" colspan=2>average rating: 4</th>
+		              <th class="span-1" colspan=2>average rating: 2</th>
+		              <th class="span-1" colspan=2>average rating: 4</th>
+		            </tr>
+		            <tr>
+		               <s:iterator value="{'1', '2', '3', '4'}" id='number'>
+		                  <th class="span-1">with overview</th>
+		              	  <th class="span-1">without overview</th>
+		               </s:iterator>
+		            </tr>
+		          </thead>
+		          
+		          
+		          
+		          <tbody>
+		          	<tr>
+		          		<td class="span-1" rowspan=3>Position of the distinct review</td>
+		          		<td class="span-1">begin</td>
+		          		<s:iterator value="conditionGroups" id="group" status="position">
+		          			<s:if test="%{#position.getIndex()>=0}">
+		          				<s:if test="%{#position.getIndex()<=7}">
+		          					<td><s:property value="id" /></td>
+		          				</s:if>
+		          			</s:if>
+	          			</s:iterator>
+		          	</tr>
+		          	<tr>
+		          		<td class="span-1">middle</td>
+		          		<s:iterator value="conditionGroups" id="group" status="position">
+		          			<s:if test="%{#position.getIndex()>=8}">
+		          				<s:if test="%{#position.getIndex()<=15}">
+		          					<td><s:property value="id" /></td>
+		          				</s:if>
+		          			</s:if>
+	          			</s:iterator>
+		          	</tr>
+		          	<tr>
+		          		<td class="span-1">end</td>
+		          		<s:iterator value="conditionGroups" id="group" status="position">
+		          			<s:if test="%{#position.getIndex()>=16}">
+		          				<s:if test="%{#position.getIndex()<=24}">
+		          					<td><s:property value="id" /></td>
+		          				</s:if>
+		          			</s:if>
+	          			</s:iterator>
+		          	</tr>
+		          </tbody>
+	          </table>
+	           
+		</fieldset>
+	</tiles:putAttribute>
+</tiles:insertTemplate>

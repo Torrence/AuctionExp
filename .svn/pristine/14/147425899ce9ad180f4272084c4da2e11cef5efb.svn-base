@@ -1,0 +1,75 @@
+package nju.edu.auctionExp.service;
+
+import java.util.List;
+
+import nju.edu.auctionExp.dao.ConditionGroupDAO;
+import nju.edu.auctionExp.dao.ParticipantDAO;
+import nju.edu.auctionExp.model.ConditionGroup;
+import nju.edu.auctionExp.model.Participant;
+
+public class ParticipantManagerImpl implements ParticipantManager {
+	
+	private ParticipantDAO participantDAO;
+	private ConditionGroupDAO conditionGroupDAO;
+
+	public String signIn(Participant participant) {
+		if(this.participantExist(participant.getStudentId())){
+			Participant tmp = (Participant) this.participantDAO.findByExample(participant).get(0);
+			return tmp.getIdentifier();
+		}
+		participant.setIdentifier(this.generateId(participant.getStudentId()));
+		//TODO random assign participant to a condition-group
+		List<ConditionGroup> conditionGroupList = conditionGroupDAO.findAll();
+		int randomIndex = (int)(Math.random()*conditionGroupList.size());
+		participant.setConditionGroup(conditionGroupList.get(randomIndex));
+		this.participantDAO.save(participant);		
+		return participant.getIdentifier();
+	}
+
+	/**
+	 * generate identifier based on the studentId.
+	 */
+	public String generateId(String studentId) {
+		char[] ch = studentId.toCharArray();
+		StringBuilder builder = new StringBuilder();
+		for(int i = 0; i < ch.length; ++i){
+			builder.append(ch[i] - 'a');
+		}
+		return builder.toString();
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Participant> findAll() {
+		return this.participantDAO.findAll();
+	}
+
+	public Participant findByIdentifier(String identifier) {
+		return this.participantDAO.findById(identifier);
+	}
+
+	public boolean participantExist(String studentId) {
+		return this.participantDAO.findByProperty("studentId", studentId).size()>0;
+	}
+
+	public void deleteByIdentifier(String identifier) {
+		Participant participant = this.findByIdentifier(identifier);
+		this.participantDAO.delete(participant);
+	}
+
+
+	public void setParticipantDAO(ParticipantDAO participantDAO) {
+		this.participantDAO = participantDAO;
+	}
+
+	public ParticipantDAO getParticipantDAO() {
+		return participantDAO;
+	}
+
+	public void setConditionGroupDAO(ConditionGroupDAO conditionGroupDAO) {
+		this.conditionGroupDAO = conditionGroupDAO;
+	}
+
+	public ConditionGroupDAO getConditionGroupDAO() {
+		return conditionGroupDAO;
+	}
+}

@@ -1,0 +1,58 @@
+<%@ page contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
+<%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
+<tiles:insertTemplate template="/layouts/baseLayout.jsp">
+	<tiles:putAttribute name="title" value="sign in successfully" />
+	<tiles:putAttribute name="content">
+		<fieldset>
+			<legend>Participant & The Corresponding Condition Group</legend>
+	         
+	          <table>
+		          <caption><em>Participant Detailed Information</em></caption>
+		          <thead>
+		            <tr>
+		              <th class="span-1">Identifier</th>
+		              <th class="span-1">Name</th>
+		              <th class="span-4">Student Id</th>
+		              <th class="span-4">Lab Number</th>
+		              <th class="span-1">Condition Group</th>
+		              <th class="span-4">Average Rating</th>
+		              <th class="span-4">Review Count</th>
+		              <th class="span-4">Show OverView</th>
+		              <th class="span-1 last">Distinct Review Position</th>
+		            </tr>
+		          </thead>
+		          
+		          <tbody>
+	        		<s:iterator id="participant" value="participantList">
+	        			<tr id='review-<s:property value="identifier" />' >
+	        			  <td><s:property value="identifier" /></td>
+			              <td><s:property value="name" /></td>
+			              <td><s:property value="studentId" /></td>
+			              <td><s:property value="labNo" /></td>
+			              <td><s:property value="conditionGroup.id" /></td>
+			              <td><s:property value="conditionGroup.averageRating" /></td>
+			              <td><s:property value="conditionGroup.reviewCount" /></td>
+			              <s:if test="%{conditionGroup.overview == ''}">
+		          				<td>No overview</td>
+		          		  </s:if>
+		          		  <s:if test="%{conditionGroup.overview != ''}">
+		          				<td>Has overview</td>
+		          		  </s:if>
+		          		  <s:if test="%{conditionGroup.distinctReviewOrder == 1}">
+		          				<td>Begin</td>
+		          		  </s:if>
+		          		  <s:if test="%{conditionGroup.distinctReviewOrder == 2}">
+		          				<td>Middle</td>
+		          		  </s:if>
+		          		  <s:if test="%{conditionGroup.distinctReviewOrder == 3}">
+		          				<td>End</td>
+		          		  </s:if>
+			            </tr>
+	        		</s:iterator>
+		          </tbody>
+	          </table>
+	          
+		</fieldset>
+	</tiles:putAttribute>
+</tiles:insertTemplate>

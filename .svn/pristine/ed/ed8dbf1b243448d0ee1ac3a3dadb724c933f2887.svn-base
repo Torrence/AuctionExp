@@ -1,0 +1,82 @@
+package nju.edu.auctionExp.action.administration;
+
+
+import java.util.List;
+
+
+import com.opensymphony.xwork2.Action;
+
+import nju.edu.auctionExp.action.BaseAction;
+import nju.edu.auctionExp.model.ConditionGroup;
+import nju.edu.auctionExp.service.AuctionManager;
+
+public class ConditionsAction extends BaseAction {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -698723817267288784L;
+	
+	private AuctionManager auctionManager;
+	private ConditionGroup conditionGroup;
+	private List<ConditionGroup> conditionGroups;
+	private int groupNum;                         // The group number user inputs.
+	private int[][] groupTable = new int[3][8];
+	
+	public String findConditionGroups(){
+		if(this.auctionManager.isEmptyConditionGroup()){
+			this.auctionManager.assignReviewsToConditionGroup();
+		}
+		
+		conditionGroups =  this.auctionManager.getConditionGroups();
+		
+		return Action.SUCCESS;
+	}
+	
+	public String assignGroups(){
+		
+		return Action.SUCCESS;
+	}
+	
+	
+	public void setAuctionManager(AuctionManager auctionManager) {
+		this.auctionManager = auctionManager;
+	}
+	public AuctionManager getAuctionManager() {
+		return auctionManager;
+	}
+	public void setConditionGroup(ConditionGroup conditionGroup) {
+		this.conditionGroup = conditionGroup;
+	}
+	public ConditionGroup getConditionGroup() {
+		return conditionGroup;
+	}
+	public void setConditionGroups(List<ConditionGroup> conditionGroups) {
+		this.conditionGroups = conditionGroups;
+	}
+	public List<ConditionGroup> getConditionGroups() {
+		return conditionGroups;
+	}
+
+
+	public void setGroupNum(int groupNum) {
+		this.groupNum = groupNum;
+	}
+
+
+	public int getGroupNum() {
+		return groupNum;
+	}
+
+	public void setGroupTable(int[][] groupTable) {
+		this.groupTable = groupTable;
+	}
+
+	public int[][] getGroupTable() {
+		return groupTable;
+	}
+	
+
+	
+
+}

@@ -1,0 +1,26 @@
+package nju.edu.auctionExp.service;
+
+import nju.edu.auctionExp.model.AuctionBid;
+import nju.edu.auctionExp.model.Review;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public interface AuctionGroupManager {
+	
+	
+	/**
+	 * calculate the winner based on the conditionGroup list, the auction algorithm has not been decided yet.
+	 * @param conditionGroupId
+	 * @return
+	 */
+	public AuctionBid calculateWinner(ArrayList<String> conditionGroupId);
+	
+	/**
+	 * get reviews by given condition-group
+	 * @param conditionGroupId
+	 * @return
+	 */
+	public List<Review> getReviewsByConditionGroupId(String conditionGroupId);
+	
+}

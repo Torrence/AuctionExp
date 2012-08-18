@@ -1,0 +1,123 @@
+<%@ page contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
+<%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+<tiles:insertTemplate template="/layouts/baseLayout.jsp">
+	<tiles:putAttribute name="title" value="Randomize Participants" />
+	<tiles:putAttribute name="content">
+	
+	<script type="text/javascript">
+	  		$(document).ready(function(){
+	  			var deleteParticipants=function(tableData){
+	  				var participants = "";
+					for(var i=0 ; i<tableData.length - 1; i++){
+						if(tableData[i] != undefined){
+							participants += tableData[i] + ",";
+						}
+					}
+					participants += tableData[tableData.length - 1];
+					
+					
+					$.ajax({
+	  				  type: 'POST',
+	  				  url: '<s:url action="deleteParticipants" namespace="/groupAssignment" />',
+	  				  data: {
+	  					  'participants':participants
+	  				  },
+	  				  success: function(){
+	  				  alert("success");
+	  				  	for(var i=0 ; i<tableData.length; i++){
+							if(tableData[i] != undefined){
+								$("#review-" + tableData[i]).remove();
+							}
+					}
+	  				  },
+	  				  dataType: 'json'
+	  				});
+	  			};
+	  		
+		  		$('#deleteButton').live('click',function(){
+	 					var tableData=new Array();
+	 					$("table tbody tr td:first-child").each(function(index, item){
+	 						var identifier = $(item).text();
+	 						if($("#checkbox-" + identifier).attr("checked")){
+			                	tableData[index]=identifier;
+			                }
+	 					});
+	 					deleteParticipants(tableData);
+		  		});
+	  		});
+	  	</script>
+		   Click the link below to randomly & equally assign participants to each condition group, and input the batch name for all new participants.<br/>
+		    <input type="text" id="batchNo"><a href="randomizeParticipants.action" target="_blank">Assign</a>
+		<br/>
+		<br/>
+		<fieldset>
+			<legend>Participant & The Corresponding Condition Group</legend>
+			<button id="deleteButton" style="float:right" >Delete</button>
+	          <table>
+		          <caption><em>Participant Detailed Information(total: <s:property value="participantList.size()"/>)</em></caption>
+		          <thead>
+		            <tr>
+		              <th class="span-1">Identifier</th>
+		              <th class="span-1">Name</th>
+		              <th class="span-1">Student Id</th>
+		              <th class="span-1">Lab Number</th>
+		              <th class="span-1">Condition Group</th>
+		              <th class="span-1">Average Rating</th>
+		              <th class="span-1">Review Count</th>
+		              <th class="span-1">Show OverView</th>
+		              <th class="span-1">Batch Name</th>
+		              <th class="span-1">Distinct Review Position</th>
+		              <th class="span-1 last">Choose</th>
+		            </tr>
+		          </thead>
+		          
+		          <tbody id="tableBody"> 
+	        		<s:iterator id="participant" value="participantList">
+	        			<tr id='review-<s:property value="identifier" />' >
+	        			  <td><s:property value="identifier" /></td>
+			              <td><s:property value="name" /></td>
+			              <td><s:property value="studentId" /></td>
+			              <td><s:property value="labNo" /></td>
+			              
+				              <td><s:property value="conditionGroup.id" /></td>
+				              <td><s:property value="conditionGroup.averageRating" /></td>
+				              <td><s:property value="conditionGroup.reviewCount" /></td>
+				              <s:if test="%{conditionGroup.overview == ''}">
+			          				<td>No overview</td>
+			          		  </s:if>
+			          		  <s:if test="%{conditionGroup.overview != ''}">
+			          				<td>Has overview</td>
+			          		  </s:if>
+			          		  <s:if test="%{conditionGroup == null}">
+			          				<td></td>
+			          		  </s:if>
+			          		  <td><s:property value="conditionGroup.batch" /></td>
+			          		  <s:if test="%{conditionGroup.distinctReviewOrder == 1}">
+			          				<td>Begin</td>
+			          		  </s:if>
+			          		  <s:if test="%{conditionGroup.distinctReviewOrder == 2}">
+			          				<td>Middle</td>
+			          		  </s:if>
+			          		  <s:if test="%{conditionGroup.distinctReviewOrder == 3}">
+			          				<td>End</td>
+			          		  </s:if>
+			          		  <s:if test="%{conditionGroup == null}">
+			          				<td></td>
+			          		  </s:if>
+			          		  <td style="text-align:middle">
+			          		  	<input type="checkbox" id='checkbox-<s:property value="identifier" />' />
+			          		  </td>
+			      
+			            </tr>
+	        		</s:iterator>
+		          </tbody>
+	          </table>
+	          
+		</fieldset>
+	</tiles:putAttribute>
+</tiles:insertTemplate>

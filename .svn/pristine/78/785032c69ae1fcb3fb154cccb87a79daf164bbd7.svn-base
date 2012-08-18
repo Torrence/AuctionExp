@@ -1,0 +1,31 @@
+package nju.edu.auctionExp.service;
+
+import java.util.List;
+
+import nju.edu.auctionExp.model.Auction;
+
+public interface AuctionManager {
+
+	/**
+	 * create/update an auction and specify the corresponding item.
+	 * @param round
+	 * @param title
+	 * @param imageUrl
+	 * @param showReview
+	 */
+	public void saveAuction(Auction auction);
+	
+	
+	/**
+	 * 
+	 * @param reviewsId:2-D array, the first of each review list is the distinct review, i.e., reviewsId[0][0] is the distinct
+	 * review of the review list reviews[0].
+	 */
+	public void generateConditionGroup(String[][] reviewsId);
+	
+	public Auction getAuctionByRound(int round);
+	
+	public void delAuction(Auction auction);
+	
+	public List<Auction> getAuctionList(int firstResult, int maxResults);
+}

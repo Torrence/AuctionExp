@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+	
+	<bean id="AuctionManager" class="nju.edu.auctionExp.service.AuctionManagerImpl">
+		<property name="auctionDAO" ref="AuctionDAO"></property>
+		<property name="conditionGroupDAO" ref="ConditionGroupDAO"></property>
+		<property name="conditiongroupReviewDAO" ref="ConditiongroupReviewDAO"></property>
+		<property name="participantDAO" ref="ParticipantDAO"></property>
+		<property name="reviewDAO" ref="ReviewDAO"></property>
+		<property name="auctionGroupDAO" ref="AuctionGroupDAO"></property>
+		<property name="auctionBidDAO" ref="AuctionBidDAO"></property>
+	</bean>
+	
+	<bean id="ItemManager" class="nju.edu.auctionExp.service.ItemManagerImpl">
+		<property name="itemDAO" ref="ItemDAO"></property>
+	</bean>
+	
+</beans>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+	<package name="groupAssignment" namespace="/groupAssignment" extends="struts-common">
+	    
+	    <action name="randomizeParticipants" method="randomizeParticipants" class="ConditionsAction">
+	    	<result name="success">groupAssignment.jsp</result>
+	    </action>
+	    
+	    <action name="findConditionGroups" method="findConditionGroups" class="ConditionsAction">
+	    	<result name="success">groupAssignment.jsp</result>
+	    </action>
+	    
+	     <action name="getLabGroups" method="getLabGroups" class="ConditionsAction">
+	    	<result name="success">labNoBasedGroup.jsp</result>
+	    </action>
+	    
+	    <action name="getSingleGroups" method="getSingleGroups" class="ConditionsAction">
+	    	<result name="success">singleGroup.jsp</result>
+	    </action>
+	    
+	    <action name="assignGroups" method="assignGroups" class="ConditionsAction">
+	    	<result name="success">selectGroupNum.jsp</result>
+	    </action>
+	    <action name="saveGroup" method="saveGroup" class="ConditionsAction">
+	    	<result type="customJSON" name="success">jsonModel</result>
+	    </action>
+	   
+    </package>
+</struts>

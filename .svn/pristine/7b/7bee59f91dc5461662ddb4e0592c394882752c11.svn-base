@@ -1,0 +1,15 @@
+package nju.edu.auctionExp.service;
+
+import java.util.List;
+
+import nju.edu.auctionExp.model.AuctionGroup;
+
+public interface GroupManager {
+	public void saveAuctionGroup(AuctionGroup auctionGroup);
+	
+	public List<AuctionGroup> getAuctionGroupListByAuctionRound(int auctionRound);
+	
+	public boolean isEmpty(int auctionRound);
+	
+	public void deleteAll(int auctionRound);
+}

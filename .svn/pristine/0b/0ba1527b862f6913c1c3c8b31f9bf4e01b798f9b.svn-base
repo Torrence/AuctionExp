@@ -1,0 +1,22 @@
+package nju.edu.auctionExp.action.administration;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.opensymphony.xwork2.Action;
+
+import nju.edu.auctionExp.action.BaseAction;
+
+public class ConditionsAction extends BaseAction {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -698723817267288784L;
+	
+
+	
+
+}

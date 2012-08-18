@@ -1,0 +1,26 @@
+package nju.edu.auctionExp.service;
+
+import java.util.ArrayList;
+
+import nju.edu.auctionExp.model.AuctionBid;
+
+public interface AuctionBidManager {
+	
+	/**
+	 * 
+	 * @param bid
+	 */
+	public void placeBid(AuctionBid bid);
+	
+	/**
+	 * 
+	 * @param participantId
+	 * @return: all the auction bids the participant has submited.
+	 */
+	public ArrayList<AuctionBid> getHistoryBids(String participantId);
+	
+	public AuctionBid getAuctionBidById(String id);
+	
+	
+
+}

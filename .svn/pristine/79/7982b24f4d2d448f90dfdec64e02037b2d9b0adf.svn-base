@@ -1,0 +1,18 @@
+<%@ page contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
+<%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
+<tiles:insertTemplate template="/layouts/baseLayout.jsp">
+	<tiles:putAttribute name="title" value="User Profile" />
+	<tiles:putAttribute name="content">
+		<fieldset>
+		
+			<legend>Assign Groups</legend>
+			<form method="post" action='<s:url action="findConditionGroups" namespace="/groupAssignment" />'>
+            	<label for="dummy6">Please input the total groups you expect: </label>
+            	<br>
+            	<input type="text" name="groupNum" size="1" id="num" value="" autofocus=true>
+            	<input type="submit" class="groupButton" value="Send">
+          	</form>
+          </fieldset>
+	</tiles:putAttribute>
+</tiles:insertTemplate>

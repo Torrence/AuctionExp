@@ -1,0 +1,77 @@
+package nju.edu.auctionExp.model;
+
+/**
+ * AuctionBid entity. @author MyEclipse Persistence Tools
+ */
+
+public class AuctionBid implements java.io.Serializable {
+
+	// Fields
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8621323845544904663L;
+	private String id;
+	private Auction auction;
+	private Participant participant;
+	private float bidPrice;
+
+	// Constructors
+
+	/** default constructor */
+	public AuctionBid() {
+	}
+	
+	public AuctionBid(String id, Participant participant, int auctionRound,
+			float bidPrice) {
+		this.id = id;
+		this.participant = participant;
+		this.setAuction(new Auction(auctionRound));
+		this.bidPrice = bidPrice;
+	}
+
+	/** full constructor */
+	public AuctionBid(String id, String identifier, int auctionRound,
+			float bidPrice) {
+		this.id = id;
+		this.participant = new Participant(identifier);
+		this.setAuction(new Auction(auctionRound));
+		this.bidPrice = bidPrice;
+	}
+
+	// Property accessors
+
+	public String getId() {
+		return this.id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public float getBidPrice() {
+		return this.bidPrice;
+	}
+
+	public void setBidPrice(float bidPrice) {
+		this.bidPrice = bidPrice;
+	}
+
+	public void setAuction(Auction auction) {
+		this.auction = auction;
+	}
+
+	public Auction getAuction() {
+		return auction;
+	}
+
+	public void setParticipant(Participant participant) {
+		this.participant = participant;
+	}
+
+	public Participant getParticipant() {
+		return participant;
+	}
+
+}

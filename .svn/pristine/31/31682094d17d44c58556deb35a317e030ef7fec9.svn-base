@@ -1,0 +1,107 @@
+package nju.edu.auctionExp.action.participant;
+
+import com.opensymphony.xwork2.Action;
+
+import nju.edu.auctionExp.action.BaseAction;
+import nju.edu.auctionExp.common.algo.StringIDGenerator;
+import nju.edu.auctionExp.model.Auction;
+import nju.edu.auctionExp.model.AuctionBid;
+import nju.edu.auctionExp.service.AuctionBidManager;
+import nju.edu.auctionExp.service.AuctionManager;
+import nju.edu.auctionExp.service.ParticipantManager;
+
+public class BidAction extends BaseAction {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1451110481259000185L;
+	private ParticipantManager participantManager;
+	private AuctionManager auctionManager;
+	private AuctionBidManager auctionBidManager;
+	private Auction auction;
+	private AuctionBid auctionBid;
+
+	/**
+	 * get auction detail and display in the detail page
+	 * @return
+	 */
+	public String getAuctionDetail(){
+		if(auction != null){
+			auction = auctionManager.getAuctionByRound(auction.getRound());
+		} else {
+			auction = auctionManager.getNextRoundAuction();
+		}
+		return Action.SUCCESS;
+	}
+	
+	/**
+	 * popup reviews in 7,8,9 round
+	 * @return
+	 */
+	public String getReviewList(){
+		//TODO
+		return Action.SUCCESS;
+	}
+	
+	/**
+	 * participants bid an auction
+	 * @return
+	 */
+	public String placeBid(){
+		auctionBid.setId(StringIDGenerator.getInstance().generate());
+		auctionBid.setIdentifier(getIdentifier());
+		this.setAuction(auctionManager.getAuctionByRound(auctionBid.getAuction().getRound()));
+		return Action.SUCCESS;
+	}
+	
+	/**
+	 * get auction result each round
+	 * @return
+	 */
+	public String getAuctionResult(){
+		//TODO
+		return Action.SUCCESS;
+	}
+
+	public ParticipantManager getParticipantManager() {
+		return participantManager;
+	}
+
+	public void setParticipantManager(ParticipantManager participantManager) {
+		this.participantManager = participantManager;
+	}
+
+	public AuctionManager getAuctionManager() {
+		return auctionManager;
+	}
+
+	public void setAuctionManager(AuctionManager auctionManager) {
+		this.auctionManager = auctionManager;
+	}
+
+	public AuctionBidManager getAuctionBidManager() {
+		return auctionBidManager;
+	}
+
+	public void setAuctionBidManager(AuctionBidManager auctionBidManager) {
+		this.auctionBidManager = auctionBidManager;
+	}
+
+	public AuctionBid getAuctionBid() {
+		return auctionBid;
+	}
+
+	public void setAuctionBid(AuctionBid auctionBid) {
+		this.auctionBid = auctionBid;
+	}
+
+	public void setAuction(Auction auction) {
+		this.auction = auction;
+	}
+
+	public Auction getAuction() {
+		return auction;
+	}
+
+}

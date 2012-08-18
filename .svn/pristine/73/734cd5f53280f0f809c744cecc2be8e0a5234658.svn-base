@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+	<constant name="struts.devMode" value="true" />
+	<constant name="struts.objectFactory" value="spring"/>
+	<constant name="struts.locale" value="en_US"/>
+	<constant name="struts.i18n.encoding" value="UTF-8" />
+	<constant name="struts.custom.i18n.resources" value="globalMessage"/>
+	<constant name="struts.ui.theme" value="simple"/>
+		
+	<include file="struts-common.xml"/>
+	<include file="struts-action-user.xml"/>
+	<include file="struts-action-review.xml"/>
+	<include file="struts-action-participant.xml"/>
+	<include file="struts-action-auction.xml"/>
+</struts>    

@@ -1,0 +1,36 @@
+package nju.edu.auctionExp.service;
+
+import java.util.List;
+
+import nju.edu.auctionExp.model.Auction;
+
+public interface AuctionManager {
+
+	/**
+	 * create/update an auction and specify the corresponding item.
+	 * @param round
+	 * @param title
+	 * @param imageUrl
+	 * @param showReview
+	 */
+	public void saveAuction(Auction auction);
+	
+	
+	
+	public Auction getAuctionByRound(int round);
+	
+	/**
+	 * get next round auction
+	 * @return
+	 */
+	public Auction getNextRoundAuction();
+	
+	public void delAuction(Auction auction);
+	
+	public List<Auction> getAuctionList(int firstResult, int maxResults);
+	
+	public void assignReviewsToConditionGroup();
+	
+	public void assignParticipantToConditionGroup();
+	
+}

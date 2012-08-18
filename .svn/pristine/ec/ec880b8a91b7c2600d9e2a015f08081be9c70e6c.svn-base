@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+	<package name="auction" namespace="/auction" extends="struts-common">
+	    <action name="getAuctionForm" method="getAuctionForm" class="AuctionAction">
+	    	<result name="success">auctionForm.jsp</result>
+	    </action>
+	    <action name="saveAuction" method="saveAuction" class="AuctionAction">
+	    	<result type="customJSON" name="success">jsonModel</result>
+	    </action>
+	    <action name="startAuction" method="startAuction" class="AuctionAction">
+	    	<result type="customJSON" name="success">jsonModel</result>
+	    </action>
+    </package>
+</struts>

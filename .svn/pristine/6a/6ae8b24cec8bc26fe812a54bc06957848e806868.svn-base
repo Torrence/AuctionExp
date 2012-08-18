@@ -1,0 +1,72 @@
+package nju.edu.auctionExp.model;
+
+/**
+ * AuctionGroup entity. @author MyEclipse Persistence Tools
+ */
+
+public class AuctionGroup implements java.io.Serializable {
+
+	// Fields
+
+	private String id;
+	private Integer auctionRound;
+	private String conditionGroup;
+	private Float groupPrice;
+
+	// Constructors
+
+	/** default constructor */
+	public AuctionGroup() {
+	}
+
+	/** minimal constructor */
+	public AuctionGroup(String id, Integer auctionRound, String conditionGroup) {
+		this.id = id;
+		this.auctionRound = auctionRound;
+		this.conditionGroup = conditionGroup;
+	}
+
+	/** full constructor */
+	public AuctionGroup(String id, Integer auctionRound, String conditionGroup,
+			Float groupPrice) {
+		this.id = id;
+		this.auctionRound = auctionRound;
+		this.conditionGroup = conditionGroup;
+		this.groupPrice = groupPrice;
+	}
+
+	// Property accessors
+
+	public String getId() {
+		return this.id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public Integer getAuctionRound() {
+		return this.auctionRound;
+	}
+
+	public void setAuctionRound(Integer auctionRound) {
+		this.auctionRound = auctionRound;
+	}
+
+	public String getConditionGroup() {
+		return this.conditionGroup;
+	}
+
+	public void setConditionGroup(String conditionGroup) {
+		this.conditionGroup = conditionGroup;
+	}
+
+	public Float getGroupPrice() {
+		return this.groupPrice;
+	}
+
+	public void setGroupPrice(Float groupPrice) {
+		this.groupPrice = groupPrice;
+	}
+
+}

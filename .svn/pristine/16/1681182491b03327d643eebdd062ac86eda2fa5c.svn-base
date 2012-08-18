@@ -1,0 +1,24 @@
+#MyEclipse Hibernate Properties
+#Sun Jul 15 18:56:09 CST 2012
+sessionFactoryName=nju.edu.auctionExp.dao.hibernate.HibernateSessionFactory
+genBasicCompId=false
+profile=
+daoSFId=sessionFactory
+version=3.3
+jndiPath=
+detectM2M=false
+reStrategyClass=
+detectO2O=false
+springDaoFile=resources/applicationContext-dao-hibernate.xml
+useJavaTypes=true
+keyGenerator=
+libInstallFolder=WebRoot/WEB-INF/lib
+addLibs2Project=true
+genVersionTag=false
+sessionFactoryId=sessionFactory
+basePersistenceClass=
+genAnnotations=false
+reSettingsFile=
+configFile=/auctionExp/resources/applicationContext-dao-hibernate.xml
+createConfigFile=false
+addLibs2Classpath=true

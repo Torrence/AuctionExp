@@ -1,0 +1,81 @@
+package nju.edu.auctionExp.action.participant;
+
+import com.opensymphony.xwork2.Action;
+
+import nju.edu.auctionExp.action.BaseAction;
+import nju.edu.auctionExp.model.Auction;
+import nju.edu.auctionExp.model.Participant;
+import nju.edu.auctionExp.service.AuctionManager;
+import nju.edu.auctionExp.service.ParticipantManager;
+
+public class ParticipantAction extends BaseAction {
+
+	private static final long serialVersionUID = 4508750866082650479L;
+	
+	private ParticipantManager participantManager;
+	private Participant participant;
+	
+	/**
+	 * participants sign in
+	 * @return
+	 */
+	public String signIn(){
+		participant.setIdentifier(this.participantManager.signIn(this.participant));
+		
+		return Action.SUCCESS;
+	}
+	
+	/**
+	 * get auction detail and display in the detail page
+	 * @return
+	 */
+	public String getAuctionDetail(){
+		//TODO
+		return Action.SUCCESS;
+	}
+	
+	/**
+	 * popup reviews in 7,8,9 round
+	 * @return
+	 */
+	public String getReviewList(){
+		//TODO
+		return Action.SUCCESS;
+	}
+	
+	/**
+	 * participants bid an auction
+	 * @return
+	 */
+	public String bid(){
+		//TODO
+		return Action.SUCCESS;
+	}
+	
+	/**
+	 * get auction result each round
+	 * @return
+	 */
+	public String getAuctionResult(){
+		//TODO
+		return Action.SUCCESS;
+	}
+
+	public void setParticipantManager(ParticipantManager participantManager) {
+		this.participantManager = participantManager;
+	}
+
+	public ParticipantManager getParticipantManager() {
+		return participantManager;
+	}
+
+	public void setParticipant(Participant participant) {
+		this.participant = participant;
+	}
+
+	public Participant getParticipant() {
+		return participant;
+	}
+
+
+}

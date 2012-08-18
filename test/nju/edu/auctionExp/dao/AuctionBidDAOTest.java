@@ -1,0 +1,51 @@
+package nju.edu.auctionExp.dao;
+
+import static org.junit.Assert.*;
+
+import java.util.List;
+
+import nju.edu.auctionExp.model.AuctionBid;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class AuctionBidDAOTest {
+	
+	private AuctionBidDAO dao;
+
+	@Before
+	public void setUp() throws Exception {
+		ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext-dao-hibernate.xml");
+		this.dao = (AuctionBidDAO)context.getBean("AuctionBidDAO");
+	}
+
+	@Test
+	public void testInitDao() {
+		this.dao.initDao();
+	}
+
+	@Test
+	public void testSave() {
+		AuctionBid auctionBid = new AuctionBid("0", "08551234", 1, 2);
+		this.dao.save(auctionBid);
+	}
+
+	@Test
+	public void testDelete() {
+		AuctionBid auctionBid = new AuctionBid("0", "08551234", 1, 2);
+		this.dao.delete(auctionBid);
+	}
+
+	@Test
+	public void testFindById() {
+		AuctionBid auctionBid = this.dao.findById("0");
+	}
+
+	@Test
+	public void testFindAll() {
+		List<AuctionBid> auctionBidList = this.dao.findAll();
+	}
+
+}

@@ -1,0 +1,170 @@
+package nju.edu.auctionExp.action.participant;
+
+import java.util.List;
+
+import com.opensymphony.xwork2.Action;
+
+import nju.edu.auctionExp.action.BaseAction;
+import nju.edu.auctionExp.common.algo.StringIDGenerator;
+import nju.edu.auctionExp.model.Auction;
+import nju.edu.auctionExp.model.AuctionBid;
+import nju.edu.auctionExp.model.AuctionStatus;
+import nju.edu.auctionExp.model.Participant;
+import nju.edu.auctionExp.model.Review;
+import nju.edu.auctionExp.service.AuctionBidManager;
+import nju.edu.auctionExp.service.AuctionGroupManager;
+import nju.edu.auctionExp.service.AuctionManager;
+import nju.edu.auctionExp.service.ParticipantManager;
+
+public class BidAction extends BaseAction {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1451110481259000185L;
+	private ParticipantManager participantManager;
+	private AuctionManager auctionManager;
+	private AuctionBidManager auctionBidManager;
+	private AuctionGroupManager auctionGroupManager;
+	private Auction auction;
+	private AuctionBid auctionBid;
+	private List<AuctionBid> bidHistoryList;
+	private List<Review> reviewList;
+	//重复出价标记
+	private boolean reBidFlag;
+
+	/**
+	 * get auction detail and display in the detail page
+	 * @return
+	 */
+	public String getAuctionDetail(){
+		if(auction != null){
+			auction = auctionManager.getAuctionByRound(auction.getRound());
+		} else {
+			auction = auctionManager.getNextRoundAuction();
+		}
+		
+		//if participant has already this auction
+		if(auction != null){
+			this.setBidHistoryList(auctionBidManager.getHistoryBids(getIdentifier()));
+			for(AuctionBid bidHistory : bidHistoryList){
+				if(bidHistory.getAuction().getRound() == auction.getRound()){
+					auction = null;
+					return Action.SUCCESS;
+				}
+			}
+		}
+		//set reviews
+		if(auction != null && auction.getShowReviews()){
+			Participant participant = participantManager.findByIdentifier(getIdentifier());
+			this.reviewList = auctionGroupManager.getReviewsByConditionGroupId(participant.getConditionGroup().getId());
+		}
+		return Action.SUCCESS;
+	}
+	
+	/**
+	 * participants bid an auction
+	 * @return
+	 */
+	public String placeBid(){
+		auctionBid.setId(StringIDGenerator.getInstance().generate());
+		auctionBid.setIdentifier(getIdentifier());
+		this.setAuction(auctionManager.getAuctionByRound(auctionBid.getAuction().getRound()));
+		this.setBidHistoryList(auctionBidManager.getHistoryBids(getIdentifier()));
+		for(AuctionBid bidHistory : bidHistoryList){
+			if(bidHistory.getAuction().getRound() == auctionBid.getAuction().getRound()){
+				reBidFlag = true;
+				this.setAuctionBid(bidHistory);
+				return Action.SUCCESS;
+			}
+		}
+		reBidFlag = false;
+		auctionBidManager.placeBid(auctionBid);
+		return Action.SUCCESS;
+	}
+	
+	/**
+	 * get auction result each round
+	 * @return
+	 */
+	public float getFinalPrice(int round){
+		if(auctionManager.getAuctionByRound(round).getStatus() != AuctionStatus.FINISHED.getValue()){
+			return -1.0f;
+		}
+		Participant participant = participantManager.findByIdentifier(getIdentifier());
+		return auctionGroupManager.getAuctionGroupPrice(round, participant.getConditionGroup().getId());
+	}
+
+	public ParticipantManager getParticipantManager() {
+		return participantManager;
+	}
+
+	public void setParticipantManager(ParticipantManager participantManager) {
+		this.participantManager = participantManager;
+	}
+
+	public AuctionManager getAuctionManager() {
+		return auctionManager;
+	}
+
+	public void setAuctionManager(AuctionManager auctionManager) {
+		this.auctionManager = auctionManager;
+	}
+
+	public AuctionBidManager getAuctionBidManager() {
+		return auctionBidManager;
+	}
+
+	public void setAuctionBidManager(AuctionBidManager auctionBidManager) {
+		this.auctionBidManager = auctionBidManager;
+	}
+
+	public AuctionBid getAuctionBid() {
+		return auctionBid;
+	}
+
+	public void setAuctionBid(AuctionBid auctionBid) {
+		this.auctionBid = auctionBid;
+	}
+
+	public void setAuction(Auction auction) {
+		this.auction = auction;
+	}
+
+	public Auction getAuction() {
+		return auction;
+	}
+
+	public void setBidHistoryList(List<AuctionBid> bidHistoryList) {
+		this.bidHistoryList = bidHistoryList;
+	}
+
+	public List<AuctionBid> getBidHistoryList() {
+		return bidHistoryList;
+	}
+
+	public void setReviewList(List<Review> reviewList) {
+		this.reviewList = reviewList;
+	}
+
+	public List<Review> getReviewList() {
+		return reviewList;
+	}
+
+	public void setAuctionGroupManager(AuctionGroupManager auctionGroupManager) {
+		this.auctionGroupManager = auctionGroupManager;
+	}
+
+	public AuctionGroupManager getAuctionGroupManager() {
+		return auctionGroupManager;
+	}
+
+	public void setReBidFlag(boolean reBidFlag) {
+		this.reBidFlag = reBidFlag;
+	}
+
+	public boolean isReBidFlag() {
+		return reBidFlag;
+	}
+
+}

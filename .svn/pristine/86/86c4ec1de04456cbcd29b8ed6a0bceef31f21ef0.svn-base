@@ -1,0 +1,93 @@
+package nju.edu.auctionExp.service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import nju.edu.auctionExp.dao.ConditionGroupDAO;
+import nju.edu.auctionExp.dao.ConditiongroupReviewDAO;
+import nju.edu.auctionExp.dao.ReviewDAO;
+import nju.edu.auctionExp.model.AuctionBid;
+import nju.edu.auctionExp.model.ConditionGroup;
+import nju.edu.auctionExp.model.ConditiongroupReview;
+import nju.edu.auctionExp.model.Review;
+
+public class AuctionGroupManagerImpl implements AuctionGroupManager {
+
+	private ConditionGroupDAO conditionGroupDAO;
+	private ConditionGroup conditionGroup;
+	private ConditiongroupReviewDAO conditiongroupReviewDAO;
+	private ConditiongroupReview conditiongroupReview;
+	private ReviewDAO reviewDAO;
+	private Review review;
+	
+	public List<Review> getReviewsByConditionGroupId(String conditionGroupId){
+		List<Review> reviews = new ArrayList<Review>();
+		
+		@SuppressWarnings("unchecked")
+		List<ConditiongroupReview> relations = 
+			this.conditiongroupReviewDAO.findByProperty(
+					"conditionGroupId", conditionGroupId);
+		
+		String hql = "from Review whrere id in (";
+		for(ConditiongroupReview relation : relations){
+			hql += relation.getReviewId()+",";
+		}
+		reviews = this.reviewDAO.findByHQL(hql, 0, Integer.MAX_VALUE);
+		return reviews;
+	}
+	
+	public AuctionBid calculateWinner(ArrayList<String> conditionGroupId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setConditionGroupDAO(ConditionGroupDAO conditionGroupDAO) {
+		this.conditionGroupDAO = conditionGroupDAO;
+	}
+
+	public ConditionGroupDAO getConditionGroupDAO() {
+		return conditionGroupDAO;
+	}
+
+	public void setConditionGroup(ConditionGroup conditionGroup) {
+		this.conditionGroup = conditionGroup;
+	}
+
+	public ConditionGroup getConditionGroup() {
+		return conditionGroup;
+	}
+
+	public void setConditiongroupReviewRelationDAO(
+			ConditiongroupReviewDAO conditiongroupReviewDAO) {
+		this.conditiongroupReviewDAO = conditiongroupReviewDAO;
+	}
+
+	public ConditiongroupReviewDAO getConditiongroupReviewRelationDAO() {
+		return conditiongroupReviewDAO;
+	}
+
+	public void setReviewDAO(ReviewDAO reviewDAO) {
+		this.reviewDAO = reviewDAO;
+	}
+
+	public ReviewDAO getReviewDAO() {
+		return reviewDAO;
+	}
+
+	public void setConditiongroupReview(ConditiongroupReview conditiongroupReview) {
+		this.conditiongroupReview = conditiongroupReview;
+	}
+
+	public ConditiongroupReview getConditiongroupReview() {
+		return conditiongroupReview;
+	}
+
+	public void setReview(Review review) {
+		this.review = review;
+	}
+
+	public Review getReview() {
+		return review;
+	}
+	
+}

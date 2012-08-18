@@ -1,0 +1,187 @@
+package nju.edu.auctionExp.service;
+
+import java.util.List;
+
+import nju.edu.auctionExp.dao.AuctionDAO;
+import nju.edu.auctionExp.dao.ConditionGroupDAO;
+import nju.edu.auctionExp.dao.ConditiongroupReviewDAO;
+import nju.edu.auctionExp.dao.ParticipantDAO;
+import nju.edu.auctionExp.dao.ReviewDAO;
+import nju.edu.auctionExp.model.Auction;
+import nju.edu.auctionExp.model.ConditionGroup;
+import nju.edu.auctionExp.model.ConditiongroupReview;
+import nju.edu.auctionExp.model.Review;
+
+public class AuctionManagerImpl implements AuctionManager {
+
+	private AuctionDAO auctionDAO;
+	
+	private ConditionGroupDAO conditionGroupDAO;
+	private ConditiongroupReviewDAO conditongroupReviewRelationDAO;
+	private ParticipantDAO participantDAO;
+	private ReviewDAO reviewDAO;
+	
+	
+	@Override
+	public void assignParticipantToConditionGroup() {
+		//TODO
+	}
+	
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void assignReviewsToConditionGroup() {
+		List<Review> reviewList = this.reviewDAO.findAll();
+		if(this.conditionGroupDAO.findAll().size() == 0){
+			generateConditionGroup();
+		}
+		
+		for(int i = 0; i < reviewList.size(); ++i){
+			Review review = reviewList.get(i);
+			String reviewId = review.getId();
+			char[] ch = review.getId().toCharArray();
+			
+			StringBuilder builder = new StringBuilder();
+			builder.append(ch[0]);
+			builder.append(ch[1]);
+			builder.append(ch[2]);
+			
+			String idHead = builder.toString();
+			
+			for(int j=1; j<4; j++){
+				for(int k=0; k<2; k++){
+					/*
+					 * the relation id.
+					 */
+					StringBuilder relationId = new StringBuilder();
+					relationId.append(reviewId);
+					relationId.append((j-1)*2 + k);
+					String relationshipId = relationId.toString();
+					
+					/*
+					 * the corresponding conditionGroup id.
+					 */
+					StringBuilder conditionGroupId = new StringBuilder();
+					conditionGroupId.append(idHead);
+					conditionGroupId.append(j);
+					conditionGroupId.append(k);
+					String conGroupId = conditionGroupId.toString();
+					
+					this.conditongroupReviewRelationDAO.save(
+							new ConditiongroupReview(relationshipId,
+									conGroupId, reviewId)
+							);
+				}
+			}
+							
+			//this.conditongroupReviewRelationDAO.save();	
+		}	
+	}
+	
+	
+	public void generateConditionGroup(){		
+		/*
+		 * ConditionGroup id's naming strategy:
+		 * the count of review, average rating, distinct review position, overview
+		 *         06/14               2/4                   1/2/3           0/1
+		 */
+		
+		for(int i = 0; i < 2; ++i){
+			int num = (0 == i ? 6:14);
+			String count = ((Integer)num).toString();
+			for(int j = 0; j < 2; ++j){
+				int average = (0 == j ? 2:4);
+				String averageRating = ((Integer)average).toString();
+				for(int k = 1; k < 4; ++k){
+					String position = ((Integer)k).toString();
+					for(int l = 0; l < 2; ++l){
+						String overview = ((Integer)l).toString();
+						
+						String conditionGroupId = count + averageRating + position + overview;
+						this.conditionGroupDAO.save(new ConditionGroup(conditionGroupId, "", k, average, num));
+					}
+				}
+			}
+		}
+		
+	}
+	
+	@Override
+	public void saveAuction(Auction auction) {
+		this.auctionDAO.save(auction);
+	}
+
+	@Override
+	public Auction getAuctionByRound(int round) {
+		return this.auctionDAO.findById(round);
+	}
+	
+	@Override
+	public Auction getNextRoundAuction(){
+		List<Auction> auctionList = auctionDAO.findByHQL("from Auction where status = 0 order by round ASC", 0, 1);
+		return auctionList != null && auctionList.size()>0 ? auctionList.get(0) : null;
+	}
+
+	@Override
+	public void delAuction(Auction auction) {
+		this.auctionDAO.delete(auction);
+	}
+
+	@Override
+	public List<Auction> getAuctionList(int firstResult, int maxResults) {
+		return auctionDAO.findByHQL("from Auction order by round ASC", firstResult, maxResults);
+	}
+
+	public void setAuctionDAO(AuctionDAO auctionDAO) {
+		this.auctionDAO = auctionDAO;
+	}
+
+	public AuctionDAO getAuctionDAO() {
+		return auctionDAO;
+	}
+
+
+	public void setConditionGroupDAO(ConditionGroupDAO conditionGroupDAO) {
+		this.conditionGroupDAO = conditionGroupDAO;
+	}
+
+
+	public ConditionGroupDAO getConditionGroupDAO() {
+		return conditionGroupDAO;
+	}
+
+
+	public void setParticipantDAO(ParticipantDAO participantDAO) {
+		this.participantDAO = participantDAO;
+	}
+
+
+	public ParticipantDAO getParticipantDAO() {
+		return participantDAO;
+	}
+
+
+	public void setReviewDAO(ReviewDAO reviewDAO) {
+		this.reviewDAO = reviewDAO;
+	}
+
+
+	public ReviewDAO getReviewDAO() {
+		return reviewDAO;
+	}
+
+
+	public void setConditongroupReviewRelationDAO(
+			ConditiongroupReviewDAO conditongroupReviewRelationDAO) {
+		this.conditongroupReviewRelationDAO = conditongroupReviewRelationDAO;
+	}
+
+
+	public ConditiongroupReviewDAO getConditongroupReviewRelationDAO() {
+		return conditongroupReviewRelationDAO;
+	}
+
+
+
+
+}

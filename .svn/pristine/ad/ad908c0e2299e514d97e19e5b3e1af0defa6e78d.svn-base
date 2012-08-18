@@ -1,0 +1,95 @@
+package nju.edu.auctionExp.model;
+
+import java.util.List;
+
+/**
+ * ConditionGroup entity. @author MyEclipse Persistence Tools
+ */
+
+public class ConditionGroup implements java.io.Serializable {
+
+	// Fields
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2029867961026121378L;
+	private String id;
+	private String overview;
+	private int distinctReviewOrder;
+	private float averageRating;
+	private List<Review> reviewList;
+	private List<Participant> participantList;
+
+	// Constructors
+
+	/** default constructor */
+	public ConditionGroup() {
+	}
+
+	/** minimal constructor */
+	public ConditionGroup(String id, int distinctReviewOrder) {
+		this.id = id;
+		this.distinctReviewOrder = distinctReviewOrder;
+	}
+
+	/** full constructor */
+	public ConditionGroup(String id, String overview,
+			int distinctReviewOrder, float averageRating) {
+		this.id = id;
+		this.overview = overview;
+		this.distinctReviewOrder = distinctReviewOrder;
+		this.averageRating = averageRating;
+	}
+
+	// Property accessors
+
+	public String getId() {
+		return this.id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getOverview() {
+		return this.overview;
+	}
+
+	public void setOverview(String overview) {
+		this.overview = overview;
+	}
+
+	public int getDistinctReviewOrder() {
+		return this.distinctReviewOrder;
+	}
+
+	public void setDistinctReviewOrder(int distinctReviewOrder) {
+		this.distinctReviewOrder = distinctReviewOrder;
+	}
+
+	public float getAverageRating() {
+		return this.averageRating;
+	}
+
+	public void setAverageRating(float averageRating) {
+		this.averageRating = averageRating;
+	}
+
+	public void setParticipantList(List<Participant> participantList) {
+		this.participantList = participantList;
+	}
+
+	public List<Participant> getParticipantList() {
+		return participantList;
+	}
+
+	public void setReviewList(List<Review> reviewList) {
+		this.reviewList = reviewList;
+	}
+
+	public List<Review> getReviewList() {
+		return reviewList;
+	}
+
+}

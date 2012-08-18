@@ -1,0 +1,45 @@
+package nju.edu.auctionExp.service;
+
+import java.util.List;
+
+import nju.edu.auctionExp.dao.AuctionGroupDAO;
+import nju.edu.auctionExp.model.AuctionGroup;
+
+public class GroupManagerImpl implements GroupManager {
+
+	private AuctionGroupDAO auctionGroupDAO;
+	
+	@Override
+	public void saveAuctionGroup(AuctionGroup auctionGroup) {
+		this.auctionGroupDAO.save(auctionGroup);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<AuctionGroup> getAuctionGroupListByAuctionRound(int auctionRound) {
+		return this.auctionGroupDAO.findByProperty("auctionRound", auctionRound);
+	}
+
+	public void setAuctionGroupDAO(AuctionGroupDAO auctionGroupDAO) {
+		this.auctionGroupDAO = auctionGroupDAO;
+	}
+
+	public AuctionGroupDAO getAuctionGroupDAO() {
+		return auctionGroupDAO;
+	}
+
+	@Override
+	public boolean isEmpty(int auctionRound) {
+		return this.auctionGroupDAO.findByProperty("auctionRound", auctionRound).isEmpty();
+	}
+
+	@Override
+	public void deleteAll(int auctionRound) {
+		//this.auctionGroupDAO.findByHQL("delete AuctionGroup auctionGroup", 0, Integer.MAX_VALUE);
+		List<AuctionGroup> auctionGroupList = this.auctionGroupDAO.findByProperty("auctionRound", auctionRound);
+		for(int i=0; i<auctionGroupList.size(); i++){
+			this.auctionGroupDAO.delete(auctionGroupList.get(i));
+		}
+	}
+
+}

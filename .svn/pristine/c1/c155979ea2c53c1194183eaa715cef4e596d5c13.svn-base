@@ -1,0 +1,88 @@
+<%@ page contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
+<%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
+<tiles:insertTemplate template="/layouts/baseLayout.jsp">
+	<tiles:putAttribute name="title" value="Bid the Auction" />
+	<tiles:putAttribute name="content">
+		<div id="auction-detail" >
+			<fieldset>
+				<legend>Bid the Auction</legend>
+				<div class="space"></div>
+				<div class="span-20">
+					<h2 id="auction-title">
+						<s:property value="auction.item.title" />
+					</h2>
+				</div>
+				<div class="span-20">
+					<div class="span-8">
+						<s:if test="auction.item==null||auction.item.imageUrl==null">
+							<img src='<s:url value="/images/no-pre.png" />' width="300px" height="300px" />
+						</s:if>
+						<s:else>
+							<img alt='' src='<s:url value="/uploadfiles/" /><s:property value="auction.item.imageUrl" />' width="300px" height="300px" />
+						</s:else>
+					</div>
+					<div class="span-8">
+						<div class="space"></div>
+						<div>
+							<h2>My Bid:<s:property value="auctionBid.bidPrice" /></h2>
+						</div>
+						<div class="info">
+							<s:if test="reBidFlag">
+								You have bid for one time, do not repeat bid.
+							</s:if>
+							<s:if test="auction.status!=2">
+								(Bid result currently not available)
+							</s:if>
+							<s:else>
+								<s:if test="getFinalPrice(auction.round)>auctionBid.bidPrice">
+									(BID RESULT: LOSE)
+								</s:if>
+								<s:else>
+									(BID RESULT: WIN)
+								</s:else>
+							</s:else>
+						</div>
+					</div>
+				</div>
+			</fieldset>
+			<table>
+				<caption>Bid History</caption>
+		          <thead>
+		            <tr>
+		              <th class="span-1">Round</th>
+		              <th class="span-2">My Bid</th>
+		              <th class="span-4">Bid Result</th>
+		            </tr>
+		          </thead>
+		          <tbody>
+		          	<s:iterator value="bidHistoryList">
+		          		<tr>
+		          			<td>
+		          				<s:property value="auction.round"/>
+		          			</td>
+		          			<td>
+		          				<s:property value="bidPrice"/>
+		          			</td>
+		          			<td>
+		          				<s:set name="finalPrice" value="getFinalPrice(auction.round)"></s:set>
+		          				<s:if test="#finalPrice<0">
+									NOT AVAILABLE
+								</s:if>
+								<s:elseif test="#finalPrice<bidPrice">
+									WIN
+								</s:elseif>
+								<s:else>
+									FAIL
+								</s:else>
+		          			</td>
+		          		</tr>
+		          	</s:iterator>
+		          	<tr>
+		          	</tr>
+		          </tbody>
+			</table>
+			<h1><a href='<s:url action="getAuctionDetail" namespace="/participant" />'>Try</a> a new round</h1>
+		</div>
+	</tiles:putAttribute>
+</tiles:insertTemplate>

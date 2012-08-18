@@ -1,0 +1,12 @@
+<%@ page contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
+<%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
+<tiles:insertTemplate template="/layouts/baseLayout.jsp">
+	<tiles:putAttribute name="title" value="sign in successfully" />
+	<tiles:putAttribute name="content">
+	welcome, 
+		<h3>
+	    	<s:property value="participant.identifier" />
+	    </h3>
+	</tiles:putAttribute>
+</tiles:insertTemplate>

@@ -1,0 +1,136 @@
+package nju.edu.auctionExp.action.administration;
+
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+import com.opensymphony.xwork2.Action;
+
+import nju.edu.auctionExp.action.BaseAction;
+import nju.edu.auctionExp.model.ConditionGroup;
+import nju.edu.auctionExp.service.AuctionManager;
+import nju.edu.auctionExp.service.ParticipantManager;
+
+public class ConditionsAction extends BaseAction {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -698723817267288784L;
+	
+	private AuctionManager auctionManager;
+	private ConditionGroup conditionGroup;
+	private ParticipantManager participantManager;
+	private List<ConditionGroup> conditionGroups;
+	private int groupNum;                         // The group number user inputs.
+	private int[] grouping = new int[groupNum];                       // 24 integers indicate each of the condition-group is assigned to which real group.
+	private ArrayList<ArrayList<String>> groupMap;
+	//private int[][] groupTable = new int[groupNum][];
+	
+	public String saveGroup(){
+		
+		ArrayList<ArrayList<Integer>> groupTable = new ArrayList<ArrayList<Integer>>();
+		
+		for(int i = 0; i < 24; ++i){
+			groupTable.get(grouping[i]).add(i);
+		}
+		generateGroups(groupTable);
+		this.setJsonModel(groupTable);
+		return Action.SUCCESS;
+	}
+	
+	public void generateGroups(ArrayList<ArrayList<Integer>> groupTable){
+		// the arraylist is transmitted from the client side, with the length of groupNum.
+		
+		for(int i = 0; i < groupNum; ++i){
+			ArrayList<Integer> group = groupTable.get(i);
+			ArrayList<String> realGroup = new ArrayList<String>();
+			for(int j=0; j<group.size(); ++j){
+				realGroup.add(this.participantManager.getConditionGroupIdByNum(group.get(j)));
+			}
+			this.groupMap.add(realGroup);
+		}
+	}
+	
+	public String findConditionGroups(){
+		if(this.auctionManager.isEmptyConditionGroup()){
+			this.auctionManager.assignReviewsToConditionGroup();
+		}
+		
+		conditionGroups =  this.auctionManager.getConditionGroups();
+		
+		return Action.SUCCESS;
+	}
+	
+	public String assignGroups(){
+		
+		return Action.SUCCESS;
+	}
+	
+	
+	public void setAuctionManager(AuctionManager auctionManager) {
+		this.auctionManager = auctionManager;
+	}
+	public AuctionManager getAuctionManager() {
+		return auctionManager;
+	}
+	public void setConditionGroup(ConditionGroup conditionGroup) {
+		this.conditionGroup = conditionGroup;
+	}
+	public ConditionGroup getConditionGroup() {
+		return conditionGroup;
+	}
+	public void setConditionGroups(List<ConditionGroup> conditionGroups) {
+		this.conditionGroups = conditionGroups;
+	}
+	public List<ConditionGroup> getConditionGroups() {
+		return conditionGroups;
+	}
+
+
+	public void setGroupNum(int groupNum) {
+		this.groupNum = groupNum;
+	}
+
+
+	public int getGroupNum() {
+		return groupNum;
+	}
+
+
+	public void setGroupMap(ArrayList<ArrayList<String>> groupMap) {
+		this.groupMap = groupMap;
+	}
+
+
+	public ArrayList<ArrayList<String>> getGroupMap() {
+		return groupMap;
+	}
+
+
+
+
+	public void setParticipantManager(ParticipantManager participantManager) {
+		this.participantManager = participantManager;
+	}
+
+
+
+
+	public ParticipantManager getParticipantManager() {
+		return participantManager;
+	}
+
+
+
+
+	public void setGrouping(int[] grouping) {
+		this.grouping = grouping;
+	}
+
+	public int[] getGrouping() {
+		return grouping;
+	}
+
+}

@@ -1,0 +1,60 @@
+package nju.edu.auctionExp.model;
+
+/**
+ * ConditiongroupReviewRelation entity. @author MyEclipse Persistence Tools
+ */
+
+public class ConditiongroupReviewRelation implements java.io.Serializable {
+
+	// Fields
+
+	private String id;
+	private String conditionGroupId;
+	private String reviewId;
+
+	// Constructors
+
+	/** default constructor */
+	public ConditiongroupReviewRelation() {
+	}
+
+	/** minimal constructor */
+	public ConditiongroupReviewRelation(String id) {
+		this.id = id;
+	}
+
+	/** full constructor */
+	public ConditiongroupReviewRelation(String id, String conditionGroupId,
+			String reviewId) {
+		this.id = id;
+		this.conditionGroupId = conditionGroupId;
+		this.reviewId = reviewId;
+	}
+
+	// Property accessors
+
+	public String getId() {
+		return this.id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getConditionGroupId() {
+		return this.conditionGroupId;
+	}
+
+	public void setConditionGroupId(String conditionGroupId) {
+		this.conditionGroupId = conditionGroupId;
+	}
+
+	public String getReviewId() {
+		return this.reviewId;
+	}
+
+	public void setReviewId(String reviewId) {
+		this.reviewId = reviewId;
+	}
+
+}
